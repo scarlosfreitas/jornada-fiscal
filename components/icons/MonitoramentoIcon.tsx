@@ -1,9 +1,10 @@
 import type { IconProps } from "./types";
 
-export function MonitoramentoIcon({ className }: IconProps) {
+export function MonitoramentoIcon({ className, style }: IconProps) {
   return (
     <svg
       className={className}
+      style={style}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

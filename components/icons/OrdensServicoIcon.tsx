@@ -1,9 +1,10 @@
 import type { IconProps } from "./types";
 
-export function OrdensServicoIcon({ className }: IconProps) {
+export function OrdensServicoIcon({ className, style }: IconProps) {
   return (
     <svg
       className={className}
+      style={style}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
