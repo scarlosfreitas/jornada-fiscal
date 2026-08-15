@@ -1,3 +1,5 @@
+/* Desativado — não importado em nenhum layout. O design system do produto é
+   app/gestor-alertas.css; não reative este import. */
 @import "tailwindcss";
 
 :root {
