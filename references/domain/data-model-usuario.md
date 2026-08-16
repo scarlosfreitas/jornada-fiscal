@@ -20,6 +20,20 @@ Tabela de Usuários
 | atualizado_em        | timestamp   | NOT NULL                              | Timestamp com a data de atualização ou criação                   |
 | deletado_em          | timestamp   |                                       | Timestamp como flag soft-delete (NULL = registro válido)         |
 
+## Tabela: Situacao
+Tabela de Situação
+
+| Coluna         | Tipo       | Chave/Restrição             | Descrição                                                |
+| -------------- | ---------- | --------------------------- | -------------------------------------------------------- |
+| situacao_id    | inteiro    | PK                          | Id do situação                                           |
+| situacao_nome  | string(60) | NOT NULL                    | Nome da situação                                         |
+| situacao_desc  | string     | NOT NULL                    | Descrição da situação                                    |
+| criado_por     | UUIDv7     | FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuario que criou o registro                   |
+| atualizado_por | UUIDv7     | FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuário que será atualizado a cada modificação |
+| criado_em      | timestamp  | NOT NULL                    | Timestamp da data de criação                             |
+| atualizado_em  | timestamp  | NOT NULL                    | Timestamp com a data de atualização ou criação           |
+| deletado_em    | timestamp  |                             | Timestamp como flag soft-delete (NULL = registro válido) |
+
 ## Tabela: Usuario_Situacao
 Tabela de Situação
 
@@ -36,7 +50,7 @@ Tabela de Situação
 | deletado_em     | timestamp |                                         | Timestamp como flag soft-delete (NULL = registro válido) |
 
 ## Tabela: Usuario_Origem
-Tabela de Situações do Usuário
+Tabela de Origem do Usuário
 
 | Coluna         | Tipo       | Chave/Restrição             | Descrição                                                |
 | -------------- | ---------- | --------------------------- | -------------------------------------------------------- |
@@ -47,20 +61,7 @@ Tabela de Situações do Usuário
 | criado_em      | timestamp  | NOT NULL                    | Timestamp da data de criação                             |
 | atualizado_em  | timestamp  | NOT NULL                    | Timestamp com a data de atualização ou criação           |
 | deletado_em    | timestamp  |                             | Timestamp como flag soft-delete (NULL = registro válido) |
-  
-## Tabela: Usuario_Origem
-Tabela de Origem do Cadastro do Usuário
-
-| Coluna         | Tipo       | Chave/Restrição             | Descrição                                                |
-| -------------- | ---------- | --------------------------- | -------------------------------------------------------- |
-| origem_id      | inteiro    | PK                          | Id do tipo de origem do codastro                         |
-| origem_nome    | string(60) | NOT NULL                    | Nome da origem do cadastro                               |
-| criado_por     | UUIDv7     | FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuario que criou o registro                   |
-| atualizado_por | UUIDv7     | FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuário que será atualizado a cada modificação |
-| criado_em      | timestamp  | NOT NULL                    | Timestamp da data de criação                             |
-| atualizado_em  | timestamp  | NOT NULL                    | Timestamp com a data de atualização ou criação           |
-| deletado_em    | timestamp  |                             | Timestamp como flag soft-delete (NULL = registro válido) |
-  
+ 
 ## Tabela: Sistema
 Tabela de Sistemas e API
 

@@ -15,7 +15,7 @@ Ao inserir os seeds nas tabelas, os campos a seguir devem ser utilizados:
 ## Tabela: Usuario
 Tabela de Usuários
 
-| usr_id                               | usr_username      | usr_nome                         | usr_email                         | usr_email_secundario         | us_password                                                                                       | usr_telefone | usr_image | origem_id |
+| usr_id                               | usr_username      | usr_nome                         | usr_email                         | usr_email_secundario         | usr_password                                                                                       | usr_telefone | usr_image | origem_id |
 | ------------------------------------ | ----------------- | -------------------------------- | --------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------ | --------- | --------- |
 | 019c0b11-a400-7000-8000-000000000000 | admin             | Administrador                    | scarlosfreitas@gmail.com          | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA | 96981411414  |           | 1         |
 | 019c0b11-a400-7000-8000-000000000001 | usuario           | Usuário Comum                    | usuario@email.com                 | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
@@ -86,6 +86,7 @@ Tabela de Cargos
 
 | cargo_id | cargo_nome                           | cargo_efetivo |
 | -------- | ------------------------------------ | ------------- |
+| 0        | Administrador do Sistema             | True          |
 | 1        | Auditor da Receita                   | True          |
 | 2        | Fiscal da Receita                    | True          |
 | 3        | Secretário da Fazenda                | False         |
@@ -163,31 +164,55 @@ Tabela de Perfil
 | 102       | Fiscal        | Perfil Operacional para Fiscal                                           |
 
 
+## Tabela: Func_Categoria
+Tabela de Categorias de Funcionalidades
+
+| func_categoria_id | func_categoria_nome     | func_categoria_desc                         |
+| ----------------- | ----------------------- | ------------------------------------------- |
+| 1                 | Cadastral               | Cadastro dos usuarios                       |
+| 2                 | Alertas                 | Gestão de alertas                           |
+| 3                 | Ordem de Serviço        | Ordem de serviços                           |
+| 4                 | Monitoramento           | Monitoramento de alvos                      |
+| 5                 | Jornada do Contribuinte | Vizualização de informações do Contribuinte |
+| 6                 | Operação no SATE        | Operador do SATE                            |
+
+
 ## Tabela: Funcionalidade
 Tabela de Funcionalidades
 
 | func_id | func_nome                           | func_desc |
 | ------- | ----------------------------------- | --------- |
-| 1       | Cadastrar usuário                   |           |
-| 2       | Cadastrar cargo                     |           |
-| 3       | Cadastrar setores                   |           |
-| 4       | Cadastrar perfis                    |           |
-| 5       | Cadastrar funcionalidade            |           |
-| 6       | Validar cadastro                    |           |
-| 7       | Bloquear cadastro                   |           |
-| 8       | Desbloquear cadastro                |           |
-| 101     | Criar regra de alerta               |           |
-| 102     | Iniciar regra de alerta             |           |
-| 103     | Deletar regra de alerta             |           |
-| 104     | Criar monitoramento                 |           |
-| 105     | Iniciar monitoramento               |           |
-| 106     | Encerrar monitoramento              |           |
-| 201     | Vizualizar cadastro de usuario      |           |
-| 202     | Vizualizar cadastro de contribuinte |           |
-| 203     | Vizualizar recolhimentos            |           |
-| 204     | Vizualizar declarações              |           |
-| 205     | Vizualizar timeline                 |           |
-| 206     | Vizualizar declarações              |           |
+| 101     | Cadastrar usuário                   | 1         |
+| 102     | Cadastrar cargo                     | 1         |
+| 103     | Cadastrar setores                   | 1         |
+| 104     | Cadastrar perfis                    | 1         |
+| 105     | Cadastrar funcionalidade            | 1         |
+| 106     | Validar cadastro                    | 1         |
+| 107     | Bloquear cadastro                   | 1         |
+| 108     | Desbloquear cadastro                | 1         |
+| 201     | Criar regra de alerta               | 2         |
+| 202     | Ativar regra de alerta              | 2         |
+| 203     | Suspender regra de alerta           | 2         |
+| 204     | Deletar regra de alerta             | 2         |
+| 301     | Criar Ordem de Serviço              | 3         |
+| 302     | Delegar Ordem de Serviço            | 3         |
+| 303     | Suspender de Ordem de Serviço       | 3         |
+| 304     | Deletar Ordem de Serviço            | 3         |
+| 401     | Criar monitoramento                 | 4         |
+| 402     | Ativar monitoramento                | 4         |
+| 403     | Suspender monitoramento             | 4         |
+| 404     | Encerrar monitoramento              | 4         |
+| 501     | Vizualizar cadastro de usuario      | 5         |
+| 502     | Vizualizar cadastro de contribuinte | 5         |
+| 503     | Vizualizar recolhimentos            | 5         |
+| 504     | Vizualizar declarações              | 5         |
+| 505     | Vizualizar timeline                 | 5         |
+| 506     | Vizualizar declarações              | 5         |
+| 601     | Consultar MPF                       | 6         |
+| 602     | Emitir TIF                          | 6         |
+| 602     | Preencher Notificação               | 6         |
+| 603     | Emitir auto de AI de Embaraço       | 6         |
+| 604     | Emitir auto de AI Principal         | 6         |
 
 ## Tabela: Perfil_Funcionalidade
 Tabela de Funcionalidades do Perfil
