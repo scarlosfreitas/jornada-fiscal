@@ -60,4 +60,4 @@ settings.local.json
 # Worktrees adicionais (checkout de outros branches dentro da própria árvore)
 /.worktrees/
 
-# ── Fim ─────────────────────────────────────────────────────
+# ── Fim ─────────────────────────────────────────────────────/.claude/worktrees/
