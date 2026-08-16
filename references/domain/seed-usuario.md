@@ -139,15 +139,15 @@ Tabela de Lotações do Usuário
 
 | usr_id                               | setor_id | vigencia_inicio | vigencia_fim |
 | ------------------------------------ | -------- | --------------- | ------------ |
-| 019c0b11-a400-7000-8000-000000000000 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000001 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000002 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000003 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000011 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000012 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000013 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000014 |          |                 |              |
-| 019c0b11-a400-7000-8000-000000000015 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000000 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000001 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000002 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000003 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000011 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000012 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000013 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000014 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000015 | 1        | 1/7/2026        |              |
 
 ## Tabela: Perfil
 Tabela de Perfil
@@ -180,65 +180,75 @@ Tabela de Categorias de Funcionalidades
 ## Tabela: Funcionalidade
 Tabela de Funcionalidades
 
-| func_id | func_nome                           | func_desc |
-| ------- | ----------------------------------- | --------- |
-| 101     | Cadastrar usuário                   | 1         |
-| 102     | Cadastrar cargo                     | 1         |
-| 103     | Cadastrar setores                   | 1         |
-| 104     | Cadastrar perfis                    | 1         |
-| 105     | Cadastrar funcionalidade            | 1         |
-| 106     | Validar cadastro                    | 1         |
-| 107     | Bloquear cadastro                   | 1         |
-| 108     | Desbloquear cadastro                | 1         |
-| 201     | Criar regra de alerta               | 2         |
-| 202     | Ativar regra de alerta              | 2         |
-| 203     | Suspender regra de alerta           | 2         |
-| 204     | Deletar regra de alerta             | 2         |
-| 301     | Criar Ordem de Serviço              | 3         |
-| 302     | Delegar Ordem de Serviço            | 3         |
-| 303     | Suspender de Ordem de Serviço       | 3         |
-| 304     | Deletar Ordem de Serviço            | 3         |
-| 401     | Criar monitoramento                 | 4         |
-| 402     | Ativar monitoramento                | 4         |
-| 403     | Suspender monitoramento             | 4         |
-| 404     | Encerrar monitoramento              | 4         |
-| 501     | Vizualizar cadastro de usuario      | 5         |
-| 502     | Vizualizar cadastro de contribuinte | 5         |
-| 503     | Vizualizar recolhimentos            | 5         |
-| 504     | Vizualizar declarações              | 5         |
-| 505     | Vizualizar timeline                 | 5         |
-| 506     | Vizualizar declarações              | 5         |
-| 601     | Consultar MPF                       | 6         |
-| 602     | Emitir TIF                          | 6         |
-| 602     | Preencher Notificação               | 6         |
-| 603     | Emitir auto de AI de Embaraço       | 6         |
-| 604     | Emitir auto de AI Principal         | 6         |
+| func_id | func_nome                           | func_desc | func_categoria_id |
+| ------- | ----------------------------------- | --------- | ----------------- |
+| 101     | Cadastrar usuário                   |           | 1                 |
+| 102     | Cadastrar cargo                     |           | 1                 |
+| 103     | Cadastrar setores                   |           | 1                 |
+| 104     | Cadastrar perfis                    |           | 1                 |
+| 105     | Cadastrar funcionalidade            |           | 1                 |
+| 106     | Validar cadastro                    |           | 1                 |
+| 107     | Bloquear cadastro                   |           | 1                 |
+| 108     | Desbloquear cadastro                |           | 1                 |
+| 201     | Criar regra de alerta               |           | 2                 |
+| 202     | Ativar regra de alerta              |           | 2                 |
+| 203     | Suspender regra de alerta           |           | 2                 |
+| 204     | Deletar regra de alerta             |           | 2                 |
+| 301     | Criar Ordem de Serviço              |           | 3                 |
+| 302     | Delegar Ordem de Serviço            |           | 3                 |
+| 303     | Suspender de Ordem de Serviço       |           | 3                 |
+| 304     | Deletar Ordem de Serviço            |           | 3                 |
+| 401     | Criar monitoramento                 |           | 4                 |
+| 402     | Ativar monitoramento                |           | 4                 |
+| 403     | Suspender monitoramento             |           | 4                 |
+| 404     | Encerrar monitoramento              |           | 4                 |
+| 501     | Vizualizar cadastro de usuario      |           | 5                 |
+| 502     | Vizualizar cadastro de contribuinte |           | 5                 |
+| 503     | Vizualizar recolhimentos            |           | 5                 |
+| 504     | Vizualizar entrega das declarações  |           | 5                 |
+| 505     | Vizualizar timeline                 |           | 5                 |
+| 506     | Vizualizar declarações              |           | 5                 |
+| 601     | Consultar MPF                       |           | 6                 |
+| 602     | Emitir TIF                          |           | 6                 |
+| 603     | Preencher Notificação               |           | 6                 |
+| 607     | Emitir auto de AI de Embaraço       |           | 6                 |
+| 608     | Emitir auto de AI Principal         |           | 6                 |
 
 ## Tabela: Perfil_Funcionalidade
 Tabela de Funcionalidades do Perfil
 
 | perfil_id | func_id | vigencia_inicio |
 | --------- | ------- | --------------- |
-| 3         | 1       | 1/7/2026        |
-| 3         | 2       | 1/7/2026        |
-| 3         | 3       | 1/7/2026        |
-| 3         | 4       | 1/7/2026        |
-| 3         | 5       | 1/7/2026        |
-| 4         | 6       | 1/7/2026        |
-| 5         | 7       | 1/7/2026        |
-| 4         | 8       | 1/7/2026        |
-| 101       | 101     | 1/7/2026        |
-| 101       | 102     | 1/7/2026        |
-| 101       | 103     | 1/7/2026        |
-| 101       | 104     | 1/7/2026        |
-| 101       | 105     | 1/7/2026        |
-| 101       | 106     | 1/7/2026        |
+| 3         | 101     | 1/7/2026        |
+| 3         | 102     | 1/7/2026        |
+| 3         | 103     | 1/7/2026        |
+| 3         | 104     | 1/7/2026        |
+| 3         | 105     | 1/7/2026        |
+| 4         | 106     | 1/7/2026        |
+| 5         | 107     | 1/7/2026        |
+| 4         | 108     | 1/7/2026        |
 | 101       | 201     | 1/7/2026        |
 | 101       | 202     | 1/7/2026        |
 | 101       | 203     | 1/7/2026        |
 | 101       | 204     | 1/7/2026        |
-| 101       | 205     | 1/7/2026        |
-| 101       | 206     | 1/7/2026        |
+| 101       | 301     | 1/7/2026        |
+| 101       | 302     | 1/7/2026        |
+| 101       | 303     | 1/7/2026        |
+| 101       | 304     | 1/7/2026        |
+| 101       | 401     | 1/7/2026        |
+| 101       | 402     | 1/7/2026        |
+| 101       | 403     | 1/7/2026        |
+| 101       | 404     | 1/7/2026        |
+| 101       | 501     | 1/7/2026        |
+| 101       | 502     | 1/7/2026        |
+| 101       | 503     | 1/7/2026        |
+| 101       | 504     | 1/7/2026        |
+| 101       | 505     | 1/7/2026        |
+| 101       | 506     | 1/7/2026        |
+| 101       | 601     | 1/7/2026        |
+| 101       | 602     | 1/7/2026        |
+| 101       | 603     | 1/7/2026        |
+| 101       | 604     | 1/7/2026        |
 
 ## Tabela: Usuario_Perfil
 Tabela de Perfis do Usuário
