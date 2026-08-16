@@ -1,5 +1,18 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Setup
+
+1. Copie `.env.example` para `.env` na raiz do projeto e ajuste `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` e `NEXTAUTH_SECRET` (gere este último com `openssl rand -base64 32`). `DATABASE_URL` precisa ficar coerente com as três variáveis `POSTGRES_*` — o Prisma lê só o `DATABASE_URL`.
+2. Se a porta 5432 já estiver em uso na máquina hospedeira, defina `POSTGRES_HOST_PORT` em `.devcontainer/.env` (não em `.env` — o Compose interpola essa variável a partir do diretório do arquivo de composição).
+3. Suba o ambiente de desenvolvimento (rebuild do devcontainer ou `docker compose up -d` a partir de `.devcontainer/`). O serviço `db` (PostgreSQL) é provisionado automaticamente e o `app` só inicia depois que o banco responde à verificação de saúde.
+
+### Banco de dados
+
+Os dados do PostgreSQL ficam em um volume nomeado (`pgdata`) e sobrevivem a paradas, reinicializações e reconstruções do devcontainer.
+
+- Alterar `POSTGRES_USER`/`POSTGRES_PASSWORD`/`POSTGRES_DB` no `.env` **não** afeta um banco já inicializado — essas variáveis só têm efeito na primeira inicialização do volume. Para aplicar novas credenciais a um banco existente, use `ALTER USER`/`ALTER DATABASE` ou descarte o volume.
+- Para reinicializar o banco do zero: `docker compose -f .devcontainer/docker-compose.yml down` seguido de `docker volume rm jornada-fiscal_pgdata` (confira o nome exato com `docker volume ls`), depois suba o ambiente novamente.
+
 ## Getting Started
 
 First, run the development server:
