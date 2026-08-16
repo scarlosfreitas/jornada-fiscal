@@ -11,6 +11,8 @@ export const ROUTES = {
   relatorios: `${APP_BASE}/relatorios`,
   configuracoesUsuarios: `${APP_BASE}/configuracoes/usuarios`,
   configuracoesPerfis: `${APP_BASE}/configuracoes/perfis`,
+  perfil: `${APP_BASE}/profile`,
+  alterarSenha: `${APP_BASE}/change-password`,
 } as const;
 
 export function regraDetalhe(codigo: string) {

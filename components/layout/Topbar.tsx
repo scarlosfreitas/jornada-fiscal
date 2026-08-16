@@ -2,14 +2,30 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ArrowRight, Bell, ChevronDown } from "lucide-react";
+import { signOut } from "next-auth/react";
+import { Search, ArrowRight, Bell, ChevronDown, User, KeyRound, LogOut } from "lucide-react";
 import { APP_FEATURES } from "./nav-data";
+import { ROUTES } from "@/lib/routes";
 
-export function Topbar() {
+function getInitials(name?: string | null) {
+  const tokens = name?.trim().split(/\s+/).filter(Boolean) ?? [];
+  if (tokens.length === 0) return "?";
+  if (tokens.length === 1) return tokens[0].slice(0, 2).toUpperCase();
+  return `${tokens[0][0]}${tokens[tokens.length - 1][0]}`.toUpperCase();
+}
+
+interface TopbarProps {
+  userName?: string | null;
+}
+
+export function Topbar({ userName }: TopbarProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const initials = useMemo(() => getInitials(userName), [userName]);
+  const displayName = userName?.trim() || "—";
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
@@ -62,6 +78,16 @@ export function Topbar() {
     setSearchOpen(false);
     setQuery("");
     router.push(href);
+  }
+
+  function goToUserMenuItem(href: string) {
+    setUserMenuOpen(false);
+    router.push(href);
+  }
+
+  function handleSignOut() {
+    setUserMenuOpen(false);
+    signOut({ redirectTo: "/" });
   }
 
   return (
@@ -147,20 +173,38 @@ export function Topbar() {
           className="ga-user"
           onClick={() => setUserMenuOpen((prev) => !prev)}
         >
-          <span className="ga-avatar">AR</span>
+          <span className="ga-avatar">{initials}</span>
           <span className="ga-stack-2" style={{ gap: 1, textAlign: "left" }}>
-            <span className="ga-user-name">Ana Ribeiro</span>
+            <span className="ga-user-name">{displayName}</span>
             <span className="ga-user-role">Coordenação</span>
           </span>
           <ChevronDown size={12} />
         </button>
         {userMenuOpen && (
           <div className="ga-menu" style={{ left: "auto", right: 0, top: 46, width: 200 }}>
-            <button type="button" className="ga-menu-item">
-              Meu perfil
+            <button
+              type="button"
+              className="ga-menu-item ga-row"
+              onClick={() => goToUserMenuItem(ROUTES.perfil)}
+            >
+              <User size={14} />
+              Perfil
+            </button>
+            <button
+              type="button"
+              className="ga-menu-item ga-row"
+              onClick={() => goToUserMenuItem(ROUTES.alterarSenha)}
+            >
+              <KeyRound size={14} />
+              Alterar senha
             </button>
             <div className="ga-menu-divider" />
-            <button type="button" className="ga-menu-item is-danger">
+            <button
+              type="button"
+              className="ga-menu-item ga-row is-danger"
+              onClick={handleSignOut}
+            >
+              <LogOut size={14} />
               Sair
             </button>
           </div>

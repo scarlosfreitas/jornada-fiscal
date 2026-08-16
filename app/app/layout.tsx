@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/app">)
     <div className="ga-app">
       <Sidebar />
       <div className="ga-app-main">
-        <Topbar />
+        <Topbar userName={session.user?.name} />
         <main className="ga-content">{children}</main>
         <Footer />
       </div>
