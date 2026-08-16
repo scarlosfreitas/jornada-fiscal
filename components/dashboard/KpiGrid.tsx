@@ -1,16 +1,11 @@
-import type { ComponentType } from "react";
-import { BellIcon } from "@/components/icons/BellIcon";
-import { MonitoramentoIcon } from "@/components/icons/MonitoramentoIcon";
-import { OrdensServicoIcon } from "@/components/icons/OrdensServicoIcon";
-import { CheckIcon } from "@/components/icons/CheckIcon";
-import type { IconProps } from "@/components/icons/types";
+import { Bell, Activity, ClipboardList, Check, type LucideIcon } from "lucide-react";
 import type { KpiCard, KpiVariant } from "@/lib/mock/dashboard";
 
-const KPI_ICON: Record<KpiVariant, ComponentType<IconProps>> = {
-  primary: BellIcon,
-  warning: MonitoramentoIcon,
-  danger: OrdensServicoIcon,
-  success: CheckIcon,
+const KPI_ICON: Record<KpiVariant, LucideIcon> = {
+  primary: Bell,
+  warning: Activity,
+  danger: ClipboardList,
+  success: Check,
 };
 
 export function KpiGrid({ kpis }: { kpis: KpiCard[] }) {

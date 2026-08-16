@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { AlertRow } from "@/lib/mock/dashboard";
+import { ROUTES, regraDetalhe } from "@/lib/routes";
 
 export function UltimosAlertasTable({ alerts, updatedLabel }: { alerts: AlertRow[]; updatedLabel: string }) {
   return (
@@ -9,7 +10,7 @@ export function UltimosAlertasTable({ alerts, updatedLabel }: { alerts: AlertRow
           <span className="ga-card-title">Últimos alertas gerados</span>
           <span className="ga-caption">Fila em tempo real · {updatedLabel}</span>
         </div>
-        <Link href="/alertas-gerados" className="ga-body-sm">
+        <Link href={ROUTES.alertasGerados} className="ga-body-sm">
           Ver todos
         </Link>
       </div>
@@ -36,7 +37,7 @@ export function UltimosAlertasTable({ alerts, updatedLabel }: { alerts: AlertRow
                 </span>
               </td>
               <td>
-                <Link href={`/regras/${alert.ruleCode}`} className="ga-mono">
+                <Link href={regraDetalhe(alert.ruleCode)} className="ga-mono">
                   {alert.ruleCode}
                 </Link>
               </td>

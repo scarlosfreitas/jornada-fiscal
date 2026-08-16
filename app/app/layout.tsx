@@ -1,9 +1,16 @@
-import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { Footer } from "@/components/layout/Footer";
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default async function DashboardLayout({ children }: LayoutProps<"/app">) {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/");
+  }
+
   return (
     <div className="ga-app">
       <Sidebar />

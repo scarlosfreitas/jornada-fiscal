@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { MonitoringRow } from "@/lib/mock/dashboard";
+import { ROUTES } from "@/lib/routes";
 
 export function MonitoramentosAtivosTable({ monitorings }: { monitorings: MonitoringRow[] }) {
   return (
@@ -9,7 +10,7 @@ export function MonitoramentosAtivosTable({ monitorings }: { monitorings: Monito
           <span className="ga-card-title">Monitoramentos ativos</span>
           <span className="ga-caption">Com OS de intervenção em aberto</span>
         </div>
-        <Link href="/monitoramento" className="ga-body-sm">
+        <Link href={ROUTES.monitoramento} className="ga-body-sm">
           Ver monitoramentos
         </Link>
       </div>

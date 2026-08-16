@@ -2,10 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SearchIcon } from "@/components/icons/SearchIcon";
-import { ArrowRightIcon } from "@/components/icons/ArrowRightIcon";
-import { BellIcon } from "@/components/icons/BellIcon";
-import { ChevronIcon } from "@/components/icons/ChevronIcon";
+import { Search, ArrowRight, Bell, ChevronDown } from "lucide-react";
 import { APP_FEATURES } from "./nav-data";
 
 export function Topbar() {
@@ -71,7 +68,7 @@ export function Topbar() {
     <header className="ga-topbar">
       <div className="ga-relative" ref={searchContainerRef}>
         <div className="ga-search">
-          <SearchIcon />
+          <Search size={14} color="#8A91A3" />
           <input
             ref={searchInputRef}
             value={query}
@@ -119,7 +116,7 @@ export function Topbar() {
                     flex: "none",
                   }}
                 >
-                  <ArrowRightIcon />
+                  <ArrowRight size={12} color="#2A45D4" strokeWidth={2.2} />
                 </span>
                 <span className="ga-stack-2 ga-grow" style={{ gap: 2, minWidth: 0 }}>
                   <span className="ga-cell-primary">{feature.label}</span>
@@ -140,7 +137,7 @@ export function Topbar() {
       <div className="ga-topbar-spacer" />
 
       <button type="button" className="ga-icon-btn">
-        <BellIcon />
+        <Bell size={15} />
         <span className="ga-dot-alert" />
       </button>
 
@@ -155,7 +152,7 @@ export function Topbar() {
             <span className="ga-user-name">Ana Ribeiro</span>
             <span className="ga-user-role">Coordenação</span>
           </span>
-          <ChevronIcon />
+          <ChevronDown size={12} />
         </button>
         {userMenuOpen && (
           <div className="ga-menu" style={{ left: "auto", right: 0, top: 46, width: 200 }}>

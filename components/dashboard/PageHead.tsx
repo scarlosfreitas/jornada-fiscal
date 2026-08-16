@@ -1,5 +1,4 @@
-import { ExportIcon } from "@/components/icons/ExportIcon";
-import { RefreshIcon } from "@/components/icons/RefreshIcon";
+import { Download, RefreshCw } from "lucide-react";
 import type { Period } from "@/lib/mock/dashboard";
 
 interface PageHeadProps {
@@ -38,11 +37,11 @@ export function PageHead({ period, onPeriodChange, onRefresh }: PageHeadProps) {
           disabled
           title="Exportação ainda não disponível"
         >
-          <ExportIcon />
+          <Download size={14} />
           Exportar
         </button>
         <button type="button" className="ga-btn ga-btn-primary" onClick={onRefresh}>
-          <RefreshIcon />
+          <RefreshCw size={14} />
           Atualizar
         </button>
       </div>
