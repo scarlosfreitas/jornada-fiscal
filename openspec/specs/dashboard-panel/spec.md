@@ -2,15 +2,15 @@
 
 Define o Painel operacional do Gertor de Alertas: a visão consolidada, na entrada do sistema, de alertas gerados, monitoramentos ativos, ordens de serviço de intervenção e canais de comunicação, filtrável por período.
 
-## ADDED Requirements
+## Requirements
 
-### Requirement: Painel operacional na rota /dashboard
+### Requirement: Painel operacional no índice da aplicação
 
-O sistema SHALL exibir o Painel operacional em `/dashboard`, dentro da moldura padrão da aplicação. A página SHALL fornecer apenas o conteúdo da área de conteúdo; barra lateral, barra superior e rodapé SHALL ser os mesmos de todas as demais telas.
+O sistema SHALL exibir o Painel operacional no índice da aplicação (`/app`), dentro da moldura padrão da aplicação. A página SHALL fornecer apenas o conteúdo da área de conteúdo; barra lateral, barra superior e rodapé SHALL ser os mesmos de todas as demais telas.
 
 #### Scenario: Acesso ao painel
 
-- **WHEN** a pessoa usuária acessa `/dashboard`
+- **WHEN** a pessoa usuária acessa `/app`
 - **THEN** o Painel operacional é exibido dentro da moldura padrão, com o item "Painel" destacado como ativo na navegação lateral
 
 #### Scenario: Cabeçalho da página

@@ -1,10 +1,10 @@
 ## Why
 
-A change `dashboard-shell` monta a moldura da aplicação e deixa `/dashboard` com um conteúdo placeholder deliberadamente vazio. O Painel operacional é a primeira tela real do produto e a porta de entrada da jornada do auditor: é onde alertas, monitoramentos e ordens de serviço aparecem consolidados. Sem ele, o shell existe sem nada para enquadrar e não há como validar visualmente o design system contra o protótipo.
+A change `dashboard-shell` monta a moldura da aplicação e deixa o índice da aplicação com um conteúdo placeholder deliberadamente vazio. O Painel operacional é a primeira tela real do produto e a porta de entrada da jornada do auditor: é onde alertas, monitoramentos e ordens de serviço aparecem consolidados. Sem ele, o shell existe sem nada para enquadrar e não há como validar visualmente o design system contra o protótipo.
 
 ## What Changes
 
-- `app/(dashboard)/dashboard/page.tsx` deixa de ser placeholder e passa a renderizar o Painel operacional completo, reproduzindo `references/design/Dashboard.html`. A URL continua sendo `/dashboard`.
+- `app/(dashboard)/dashboard/page.tsx` deixa de ser placeholder e passa a renderizar o Painel operacional completo, reproduzindo `references/design/Dashboard.html`. A página continua sendo o índice da aplicação — `/app`, desde `setup-login-auth`.
 - A página consome o shell já montado por `dashboard-shell` — sidebar, topbar e rodapé vêm de `components/layout/` e **não** são redeclarados aqui. A página entrega somente o conteúdo interno de `<main class="ga-content">`.
 - Novo conteúdo, na ordem do protótipo:
   - cabeçalho de página (`.ga-page-head`) com breadcrumb "Operações / Painel", título, subtítulo, seletor de período (7/30/90 dias) e os botões "Exportar" e "Atualizar";
@@ -21,10 +21,10 @@ A change `dashboard-shell` monta a moldura da aplicação e deixa `/dashboard` c
 ## Capabilities
 
 ### New Capabilities
-- `dashboard-panel`: o Painel operacional — a visão consolidada de alertas, monitoramentos, ordens de serviço e canais de comunicação exibida em `/dashboard`, incluindo a filtragem por período e as listas de acompanhamento.
+- `dashboard-panel`: o Painel operacional — a visão consolidada de alertas, monitoramentos, ordens de serviço e canais de comunicação exibida no índice da aplicação (`/app`), incluindo a filtragem por período e as listas de acompanhamento.
 
 ### Modified Capabilities
-Nenhuma. `dashboard-shell` continua valendo sem alteração: esta change é consumidora do shell, não o modifica. Enquanto `dashboard-shell` não estiver arquivada, seu requisito de conteúdo placeholder em `/dashboard` permanece como delta pendente — esta change o substitui na prática e nenhuma das duas specs entra em conflito depois de arquivadas, porque o placeholder não é um requisito da spec de shell.
+Nenhuma. `dashboard-shell` já foi arquivada sem requisito de conteúdo placeholder na spec sincronizada (`openspec/specs/dashboard-shell/spec.md`), então não há conflito a resolver ali. A rota do painel passou de `/dashboard` para `/app` por decisão de `setup-login-auth` — ver a nota em `Impact` abaixo.
 
 ## Impact
 
