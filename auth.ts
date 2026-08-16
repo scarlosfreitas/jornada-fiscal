@@ -10,7 +10,7 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update: updateSession } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -52,10 +52,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id as string;
         token.perfis = user.perfis as string[];
+      }
+      // Permite que a Server Action de "meu perfil" (fora do fluxo de login)
+      // atualize nome/e-mail/imagem já refletidos na sessão JWT corrente,
+      // via `updateSession()` — sem isso o token só mudaria em um novo login.
+      if (trigger === "update" && session) {
+        const updatedUser = session.user as
+          | { name?: string | null; email?: string | null; image?: string | null }
+          | undefined;
+        if (updatedUser?.name !== undefined) token.name = updatedUser.name;
+        if (updatedUser?.email !== undefined) token.email = updatedUser.email;
+        if (updatedUser?.image !== undefined) token.picture = updatedUser.image;
       }
       return token;
     },
