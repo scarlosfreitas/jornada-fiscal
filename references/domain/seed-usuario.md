@@ -211,8 +211,8 @@ Tabela de Funcionalidades
 | 601     | Consultar MPF                       |           | 6                 |
 | 602     | Emitir TIF                          |           | 6                 |
 | 603     | Preencher Notificação               |           | 6                 |
-| 607     | Emitir auto de AI de Embaraço       |           | 6                 |
-| 608     | Emitir auto de AI Principal         |           | 6                 |
+| 604     | Emitir auto de AI de Embaraço       |           | 6                 |
+| 605     | Emitir auto de AI Principal         |           | 6                 |
 
 ## Tabela: Perfil_Funcionalidade
 Tabela de Funcionalidades do Perfil
