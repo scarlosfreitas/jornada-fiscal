@@ -7,34 +7,338 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------------------------------------------------------
+// Domínio Usuario — ver references/domain/data-model-usuario.md (estrutura) e
+// references/domain/seed-usuario.md (carga inicial). Nomes de coluna/tabela em
+// snake_case via @map/@@map para fidelidade ao documento; models e campos em
+// PascalCase/camelCase para o padrão TypeScript do restante do código.
+//
+// Toda tabela carrega o bloco de auditoria (criado_por/atualizado_por/
+// criado_em/atualizado_em/deletado_em). As FKs de auditoria apontam sempre
+// para Usuario e usam onDelete/onUpdate NoAction — são trilha de histórico,
+// nunca devem cascatear numa exclusão.
+// ---------------------------------------------------------------------------
+
 model Usuario {
-  id             String          @id @default(cuid())
-  nome           String
-  sobrenome      String
-  email          String          @unique
-  password       String
-  telefone       String?
-  image          String?
-  cargo          String?
-  lotacao        String?
-  sq_situacao    Int             @default(1)
-  dt_criacao     DateTime        @default(now())
-  dt_atualizacao DateTime        @updatedAt
-  perfis         UsuarioPerfil[]
+  id              String    @map("usr_id") @db.Uuid
+  username        String    @unique @map("usr_username") @db.VarChar(60)
+  nome            String    @map("usr_nome") @db.VarChar(100)
+  email           String    @unique @map("usr_email") @db.VarChar(120)
+  emailSecundario String?   @map("usr_email_secundario") @db.VarChar(120)
+  password        String    @map("usr_password")
+  telefone        String?   @map("usr_telefone") @db.VarChar(60)
+  image           String?   @map("usr_image")
+  origemId        Int       @map("origem_id")
+  criadoPor       String    @map("criado_por") @db.Uuid
+  atualizadoPor   String    @map("atualizado_por") @db.Uuid
+  criadoEm        DateTime  @default(now()) @map("criado_em")
+  atualizadoEm    DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm      DateTime? @map("deletado_em")
+
+  origem UsuarioOrigem @relation("UsuarioOrigem_usuarios", fields: [origemId], references: [id])
+
+  criadoPorUsuario     Usuario @relation("Usuario_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("Usuario_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuariosCriados      Usuario[] @relation("Usuario_criadoPor")
+  usuariosAtualizados  Usuario[] @relation("Usuario_atualizadoPor")
+
+  situacoes    UsuarioSituacao[]  @relation("UsuarioSituacao_usuario")
+  cargos       UsuarioCargo[]     @relation("UsuarioCargo_usuario")
+  lotacoes     UsuarioLotacao[]   @relation("UsuarioLotacao_usuario")
+  perfis       UsuarioPerfil[]    @relation("UsuarioPerfil_usuario")
+  idsExternos  UsuarioIdExterno[] @relation("UsuarioIdExterno_usuario")
+
+  // Back-relations de auditoria — não usadas na aplicação, existem apenas
+  // porque toda tabela referencia Usuario para criado_por/atualizado_por.
+  usuarioOrigemCriados             UsuarioOrigem[]          @relation("UsuarioOrigem_criadoPor")
+  usuarioOrigemAtualizados         UsuarioOrigem[]          @relation("UsuarioOrigem_atualizadoPor")
+  situacaoCriados                  Situacao[]               @relation("Situacao_criadoPor")
+  situacaoAtualizados              Situacao[]               @relation("Situacao_atualizadoPor")
+  usuarioSituacaoCriados           UsuarioSituacao[]        @relation("UsuarioSituacao_criadoPor")
+  usuarioSituacaoAtualizados       UsuarioSituacao[]        @relation("UsuarioSituacao_atualizadoPor")
+  sistemaCriados                   Sistema[]                @relation("Sistema_criadoPor")
+  sistemaAtualizados                Sistema[]               @relation("Sistema_atualizadoPor")
+  usuarioIdExternoCriados          UsuarioIdExterno[]       @relation("UsuarioIdExterno_criadoPor")
+  usuarioIdExternoAtualizados      UsuarioIdExterno[]       @relation("UsuarioIdExterno_atualizadoPor")
+  cargoCriados                     Cargo[]                  @relation("Cargo_criadoPor")
+  cargoAtualizados                 Cargo[]                  @relation("Cargo_atualizadoPor")
+  usuarioCargoCriados              UsuarioCargo[]           @relation("UsuarioCargo_criadoPor")
+  usuarioCargoAtualizados          UsuarioCargo[]           @relation("UsuarioCargo_atualizadoPor")
+  setorCriados                     Setor[]                  @relation("Setor_criadoPor")
+  setorAtualizados                 Setor[]                  @relation("Setor_atualizadoPor")
+  usuarioLotacaoCriados            UsuarioLotacao[]         @relation("UsuarioLotacao_criadoPor")
+  usuarioLotacaoAtualizados        UsuarioLotacao[]         @relation("UsuarioLotacao_atualizadoPor")
+  perfilCriados                    Perfil[]                 @relation("Perfil_criadoPor")
+  perfilAtualizados                Perfil[]                 @relation("Perfil_atualizadoPor")
+  funcionalidadeCriados            Funcionalidade[]         @relation("Funcionalidade_criadoPor")
+  funcionalidadeAtualizados        Funcionalidade[]         @relation("Funcionalidade_atualizadoPor")
+  funcCategoriaCriados             FuncCategoria[]          @relation("FuncCategoria_criadoPor")
+  funcCategoriaAtualizados         FuncCategoria[]          @relation("FuncCategoria_atualizadoPor")
+  perfilFuncionalidadeCriados      PerfilFuncionalidade[]   @relation("PerfilFuncionalidade_criadoPor")
+  perfilFuncionalidadeAtualizados  PerfilFuncionalidade[]   @relation("PerfilFuncionalidade_atualizadoPor")
+  usuarioPerfilCriados              UsuarioPerfil[]         @relation("UsuarioPerfil_criadoPor")
+  usuarioPerfilAtualizados          UsuarioPerfil[]         @relation("UsuarioPerfil_atualizadoPor")
+
+  @@id([id])
+  @@map("usuario")
+}
+
+model UsuarioOrigem {
+  id            Int       @id @default(autoincrement()) @map("origem_id")
+  nome          String    @map("origem_nome") @db.VarChar(60)
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  usuarios             Usuario[] @relation("UsuarioOrigem_usuarios")
+  criadoPorUsuario     Usuario @relation("UsuarioOrigem_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("UsuarioOrigem_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("usuario_origem")
+}
+
+model Situacao {
+  id            Int       @id @default(autoincrement()) @map("situacao_id")
+  nome          String    @map("situacao_nome") @db.VarChar(60)
+  descricao     String    @map("situacao_desc")
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  vinculos             UsuarioSituacao[] @relation("UsuarioSituacao_situacao")
+  criadoPorUsuario     Usuario @relation("Situacao_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("Situacao_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("situacao")
+}
+
+model UsuarioSituacao {
+  usuarioId      String    @map("usr_id") @db.Uuid
+  situacaoId     Int       @map("situacao_id")
+  vigenciaInicio DateTime  @map("vigencia_inicio")
+  vigenciaFim    DateTime? @map("vigencia_fim")
+  criadoPor      String    @map("criado_por") @db.Uuid
+  atualizadoPor  String    @map("atualizado_por") @db.Uuid
+  criadoEm       DateTime  @default(now()) @map("criado_em")
+  atualizadoEm   DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm     DateTime? @map("deletado_em")
+
+  usuario              Usuario  @relation("UsuarioSituacao_usuario", fields: [usuarioId], references: [id])
+  situacao             Situacao @relation("UsuarioSituacao_situacao", fields: [situacaoId], references: [id])
+  criadoPorUsuario     Usuario  @relation("UsuarioSituacao_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario  @relation("UsuarioSituacao_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([usuarioId, situacaoId, vigenciaInicio])
+  @@map("usuario_situacao")
+}
+
+model Sistema {
+  id            Int       @id @default(autoincrement()) @map("sistema_id")
+  nome          String    @map("sistema_nome") @db.VarChar(60)
+  descricao     String    @map("sistema_desc")
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  idsExternos          UsuarioIdExterno[] @relation("UsuarioIdExterno_sistema")
+  criadoPorUsuario     Usuario @relation("Sistema_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("Sistema_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("sistema")
+}
+
+model UsuarioIdExterno {
+  usuarioId     String    @map("usr_id") @db.Uuid
+  idExterno     String    @map("usr_id_externo")
+  sistemaId     Int       @map("sistema_id")
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  usuario              Usuario @relation("UsuarioIdExterno_usuario", fields: [usuarioId], references: [id])
+  sistema              Sistema @relation("UsuarioIdExterno_sistema", fields: [sistemaId], references: [id])
+  criadoPorUsuario     Usuario @relation("UsuarioIdExterno_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("UsuarioIdExterno_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([usuarioId, idExterno, sistemaId])
+  @@map("usuario_id_externo")
+}
+
+model Cargo {
+  id            Int       @id @default(autoincrement()) @map("cargo_id")
+  nome          String    @map("cargo_nome") @db.VarChar(60)
+  efetivo       Boolean   @map("cargo_efetivo")
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  vinculos             UsuarioCargo[] @relation("UsuarioCargo_cargo")
+  criadoPorUsuario     Usuario @relation("Cargo_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("Cargo_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("cargo")
+}
+
+model UsuarioCargo {
+  usuarioId      String    @map("usr_id") @db.Uuid
+  cargoId        Int       @map("cargo_id")
+  vigenciaInicio DateTime  @map("vigencia_inicio")
+  vigenciaFim    DateTime? @map("vigencia_fim")
+  criadoPor      String    @map("criado_por") @db.Uuid
+  atualizadoPor  String    @map("atualizado_por") @db.Uuid
+  criadoEm       DateTime  @default(now()) @map("criado_em")
+  atualizadoEm   DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm     DateTime? @map("deletado_em")
+
+  usuario              Usuario @relation("UsuarioCargo_usuario", fields: [usuarioId], references: [id])
+  cargo                Cargo   @relation("UsuarioCargo_cargo", fields: [cargoId], references: [id])
+  criadoPorUsuario     Usuario @relation("UsuarioCargo_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("UsuarioCargo_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([usuarioId, cargoId, vigenciaInicio])
+  @@map("usuario_cargo")
+}
+
+model Setor {
+  id            Int       @id @default(autoincrement()) @map("setor_id")
+  paiId         Int?      @map("setor_pai")
+  sigla         String    @map("setor_sigla") @db.VarChar(12)
+  nome          String    @map("setor_nome") @db.VarChar(60)
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  pai                  Setor?  @relation("Setor_pai", fields: [paiId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  filhos               Setor[] @relation("Setor_pai")
+  lotacoes             UsuarioLotacao[] @relation("UsuarioLotacao_setor")
+  criadoPorUsuario     Usuario @relation("Setor_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("Setor_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("setor")
+}
+
+model UsuarioLotacao {
+  usuarioId      String    @map("usr_id") @db.Uuid
+  setorId        Int       @map("setor_id")
+  vigenciaInicio DateTime  @map("vigencia_inicio")
+  vigenciaFim    DateTime? @map("vigencia_fim")
+  criadoPor      String    @map("criado_por") @db.Uuid
+  atualizadoPor  String    @map("atualizado_por") @db.Uuid
+  criadoEm       DateTime  @default(now()) @map("criado_em")
+  atualizadoEm   DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm     DateTime? @map("deletado_em")
+
+  usuario              Usuario @relation("UsuarioLotacao_usuario", fields: [usuarioId], references: [id])
+  setor                Setor   @relation("UsuarioLotacao_setor", fields: [setorId], references: [id])
+  criadoPorUsuario     Usuario @relation("UsuarioLotacao_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("UsuarioLotacao_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([usuarioId, setorId, vigenciaInicio])
+  @@map("usuario_lotacao")
 }
 
 model Perfil {
-  id        String          @id @default(cuid())
-  nome      String          @unique
-  descricao String?
-  usuarios  UsuarioPerfil[]
+  id            Int       @id @default(autoincrement()) @map("perfil_id")
+  nome          String    @map("perfil_nome") @db.VarChar(60)
+  descricao     String    @map("perfil_desc")
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  funcionalidades      PerfilFuncionalidade[] @relation("PerfilFuncionalidade_perfil")
+  usuarios             UsuarioPerfil[]        @relation("UsuarioPerfil_perfil")
+  criadoPorUsuario     Usuario @relation("Perfil_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("Perfil_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("perfil")
+}
+
+model Funcionalidade {
+  id            Int       @id @default(autoincrement()) @map("func_id")
+  nome          String    @map("func_nome") @db.VarChar(60)
+  descricao     String    @map("func_desc")
+  categoriaId   Int       @map("func_categoria_id")
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  categoria            FuncCategoria          @relation("Funcionalidade_categoria", fields: [categoriaId], references: [id])
+  perfis               PerfilFuncionalidade[] @relation("PerfilFuncionalidade_funcionalidade")
+  criadoPorUsuario     Usuario @relation("Funcionalidade_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("Funcionalidade_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("funcionalidade")
+}
+
+model FuncCategoria {
+  id            Int       @id @default(autoincrement()) @map("func_categoria_id")
+  nome          String    @map("func_categoria_nome") @db.VarChar(60)
+  descricao     String    @map("func_categoria_desc")
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  funcionalidades      Funcionalidade[] @relation("Funcionalidade_categoria")
+  criadoPorUsuario     Usuario @relation("FuncCategoria_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("FuncCategoria_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("func_categoria")
+}
+
+model PerfilFuncionalidade {
+  perfilId         Int       @map("perfil_id")
+  funcionalidadeId Int       @map("func_id")
+  vigenciaInicio   DateTime  @map("vigencia_inicio")
+  vigenciaFim      DateTime? @map("vigencia_fim")
+  criadoPor        String    @map("criado_por") @db.Uuid
+  atualizadoPor    String    @map("atualizado_por") @db.Uuid
+  criadoEm         DateTime  @default(now()) @map("criado_em")
+  atualizadoEm     DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm       DateTime? @map("deletado_em")
+
+  perfil               Perfil         @relation("PerfilFuncionalidade_perfil", fields: [perfilId], references: [id])
+  funcionalidade       Funcionalidade @relation("PerfilFuncionalidade_funcionalidade", fields: [funcionalidadeId], references: [id])
+  criadoPorUsuario     Usuario @relation("PerfilFuncionalidade_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("PerfilFuncionalidade_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([perfilId, funcionalidadeId, vigenciaInicio])
+  @@map("perfil_funcionalidade")
 }
 
 model UsuarioPerfil {
-  usuarioId String
-  perfilId  String
-  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  perfil    Perfil  @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+  usuarioId      String    @map("usr_id") @db.Uuid
+  perfilId       Int       @map("perfil_id")
+  vigenciaInicio DateTime  @map("vigencia_inicio")
+  vigenciaFim    DateTime? @map("vigencia_fim")
+  criadoPor      String    @map("criado_por") @db.Uuid
+  atualizadoPor  String    @map("atualizado_por") @db.Uuid
+  criadoEm       DateTime  @default(now()) @map("criado_em")
+  atualizadoEm   DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm     DateTime? @map("deletado_em")
 
-  @@id([usuarioId, perfilId])
+  usuario              Usuario @relation("UsuarioPerfil_usuario", fields: [usuarioId], references: [id])
+  perfil               Perfil  @relation("UsuarioPerfil_perfil", fields: [perfilId], references: [id])
+  criadoPorUsuario     Usuario @relation("UsuarioPerfil_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("UsuarioPerfil_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([usuarioId, perfilId, vigenciaInicio])
+  @@map("usuario_perfil")
 }

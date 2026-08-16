@@ -10,7 +10,7 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || ROUTES.painel;
 
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -24,7 +24,7 @@ export function LoginForm() {
 
     try {
       const result = await signIn("credentials", {
-        email,
+        identifier,
         password,
         redirect: false,
       });
@@ -46,17 +46,17 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="ga-form-section" noValidate>
       <div className="ga-field">
-        <label htmlFor="email" className="ga-label">
-          E-mail
+        <label htmlFor="identifier" className="ga-label">
+          E-mail ou nome de usuário
         </label>
         <input
-          id="email"
-          name="email"
-          type="email"
+          id="identifier"
+          name="identifier"
+          type="text"
           className={`ga-input${hasError ? " is-invalid" : ""}`}
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          autoComplete="email"
+          value={identifier}
+          onChange={(event) => setIdentifier(event.target.value)}
+          autoComplete="username"
           disabled={isSubmitting}
           required
         />
@@ -79,7 +79,7 @@ export function LoginForm() {
         />
         {hasError && (
           <span className="ga-field-error" role="alert">
-            E-mail ou senha incorretos.
+            Identificador ou senha incorretos.
           </span>
         )}
       </div>

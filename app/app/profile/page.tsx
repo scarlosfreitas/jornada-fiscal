@@ -19,20 +19,39 @@ export default async function ProfilePage() {
     notFound();
   }
 
-  const usuario = await prisma.usuario.findUnique({
-    where: { id: userId },
-    select: {
-      nome: true,
-      sobrenome: true,
-      email: true,
-      telefone: true,
-      image: true,
-    },
-  });
+  const [usuario, cargoOptions] = await Promise.all([
+    prisma.usuario.findUnique({
+      where: { id: userId },
+      select: {
+        nome: true,
+        email: true,
+        telefone: true,
+        image: true,
+        cargos: {
+          where: { vigenciaFim: null, cargo: { efetivo: true } },
+          select: { cargoId: true },
+          take: 1,
+        },
+      },
+    }),
+    prisma.cargo.findMany({
+      where: { efetivo: true, deletadoEm: null },
+      orderBy: { nome: "asc" },
+      select: { id: true, nome: true },
+    }),
+  ]);
 
   if (!usuario) {
     notFound();
   }
+
+  const initialData = {
+    nome: usuario.nome,
+    email: usuario.email,
+    telefone: usuario.telefone,
+    image: usuario.image,
+    cargoId: usuario.cargos[0]?.cargoId ?? null,
+  };
 
   return (
     <>
@@ -52,7 +71,7 @@ export default async function ProfilePage() {
 
       <div className="ga-card" style={{ maxWidth: 640 }}>
         <div className="ga-card-body">
-          <ProfileForm initialData={usuario} />
+          <ProfileForm initialData={initialData} cargoOptions={cargoOptions} />
         </div>
       </div>
     </>

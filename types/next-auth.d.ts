@@ -5,11 +5,13 @@ declare module "next-auth" {
     user: {
       id: string;
       perfis: string[];
+      cargo: string | null;
     } & DefaultSession["user"];
   }
 
   interface User {
     perfis?: string[];
+    cargo?: string | null;
   }
 }
 
@@ -17,5 +19,6 @@ declare module "@auth/core/jwt" {
   interface JWT {
     id: string;
     perfis: string[];
+    cargo: string | null;
   }
 }

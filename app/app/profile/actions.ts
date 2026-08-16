@@ -21,10 +21,13 @@ const ALLOWED_IMAGE_TYPES: Record<string, string> = {
 // declara nenhum campo relacionado a perfil de acesso, então qualquer valor
 // desse tipo presente no FormData é descartado por não fazer parte do shape.
 // Alterar o próprio perfil de acesso só é possível pela tela administrativa
-// de usuários (fora do escopo desta tela de autoatendimento).
+// de usuários (fora do escopo desta tela de autoatendimento). Cargo, por
+// outro lado, É editável aqui: é dado funcional que a própria pessoa declara
+// enquanto não há integração com o diretório corporativo, e hoje não deriva
+// nenhuma permissão — apenas alimenta o rótulo da barra superior (ver
+// design.md, seção "Cargo no formulário de perfil").
 const profileFieldsSchema = z.object({
   nome: z.string().trim().min(1, "Informe o nome."),
-  sobrenome: z.string().trim().min(1, "Informe o sobrenome."),
   email: z.string().trim().min(1, "Informe o e-mail.").email("Informe um e-mail válido."),
   telefone: z
     .string()
@@ -32,6 +35,11 @@ const profileFieldsSchema = z.object({
     .max(30, "Telefone muito longo.")
     .optional()
     .transform((value) => (value ? value : undefined)),
+  cargoId: z
+    .string()
+    .trim()
+    .min(1, "Informe o cargo.")
+    .regex(/^\d+$/, "Informe um cargo válido."),
 });
 
 const imageFileSchema = z
@@ -43,7 +51,7 @@ const imageFileSchema = z
   );
 
 type ProfileFieldErrors = Partial<
-  Record<"nome" | "sobrenome" | "email" | "telefone" | "image", string>
+  Record<"nome" | "email" | "telefone" | "cargoId" | "image", string>
 >;
 
 export interface ProfileActionState {
@@ -52,10 +60,11 @@ export interface ProfileActionState {
   fieldErrors?: ProfileFieldErrors;
   data?: {
     nome: string;
-    sobrenome: string;
     email: string;
     telefone: string | null;
     image: string | null;
+    cargoId: number;
+    cargoNome: string;
   };
 }
 
@@ -75,9 +84,9 @@ export async function updateProfile(
 
   const parsed = profileFieldsSchema.safeParse({
     nome: formData.get("nome"),
-    sobrenome: formData.get("sobrenome"),
     email: formData.get("email"),
     telefone: formData.get("telefone"),
+    cargoId: formData.get("cargoId"),
   });
 
   if (!parsed.success) {
@@ -91,7 +100,20 @@ export async function updateProfile(
     return { status: "error", message: "Revise os campos destacados.", fieldErrors };
   }
 
-  const { nome, sobrenome, email, telefone } = parsed.data;
+  const { nome, email, telefone, cargoId } = parsed.data;
+  const cargoIdNum = Number(cargoId);
+
+  const cargo = await prisma.cargo.findFirst({
+    where: { id: cargoIdNum, efetivo: true, deletadoEm: null },
+    select: { id: true, nome: true },
+  });
+  if (!cargo) {
+    return {
+      status: "error",
+      message: "Revise os campos destacados.",
+      fieldErrors: { cargoId: "Selecione um cargo válido." },
+    };
+  }
 
   let newImagePath: string | undefined;
   const rawImage = formData.get("image");
@@ -131,26 +153,61 @@ export async function updateProfile(
     };
   }
 
-  try {
-    const updated = await prisma.usuario.update({
-      where: { id: userId },
-      data: {
-        nome,
-        sobrenome,
-        email,
-        telefone: telefone ?? null,
-        ...(newImagePath ? { image: newImagePath } : {}),
-      },
-      select: { nome: true, sobrenome: true, email: true, telefone: true, image: true },
-    });
+  const cargoVigenteAtual = await prisma.usuarioCargo.findFirst({
+    where: { usuarioId: userId, vigenciaFim: null, cargo: { efetivo: true } },
+    select: { cargoId: true },
+  });
 
-    // Mantém a sessão JWT corrente sincronizada — sem isso, nome/iniciais na
-    // barra superior só mudariam em um novo login.
+  try {
+    const agora = new Date();
+
+    const [updated] = await prisma.$transaction([
+      prisma.usuario.update({
+        where: { id: userId },
+        data: {
+          nome,
+          email,
+          telefone: telefone ?? null,
+          ...(newImagePath ? { image: newImagePath } : {}),
+        },
+        select: { nome: true, email: true, telefone: true, image: true },
+      }),
+      // Um único cargo efetivo vigente por vez: encerra o anterior antes de
+      // abrir o novo (ver spec perfil-usuario, "Um único cargo efetivo
+      // vigente"). Se o cargo escolhido é o mesmo já vigente, não há
+      // transição — nenhum vínculo novo é aberto.
+      ...(cargoVigenteAtual && cargoVigenteAtual.cargoId !== cargo.id
+        ? [
+            prisma.usuarioCargo.updateMany({
+              where: { usuarioId: userId, vigenciaFim: null, cargo: { efetivo: true } },
+              data: { vigenciaFim: agora },
+            }),
+          ]
+        : []),
+      ...(!cargoVigenteAtual || cargoVigenteAtual.cargoId !== cargo.id
+        ? [
+            prisma.usuarioCargo.create({
+              data: {
+                usuarioId: userId,
+                cargoId: cargo.id,
+                vigenciaInicio: agora,
+                vigenciaFim: null,
+                criadoPor: userId,
+                atualizadoPor: userId,
+              },
+            }),
+          ]
+        : []),
+    ]);
+
+    // Mantém a sessão JWT corrente sincronizada — sem isso, nome/iniciais/
+    // cargo na barra superior só mudariam em um novo login.
     await updateSession({
       user: {
-        name: `${updated.nome} ${updated.sobrenome}`,
+        name: updated.nome,
         email: updated.email,
         image: updated.image,
+        cargo: cargo.nome,
       },
     });
 
@@ -160,7 +217,7 @@ export async function updateProfile(
     return {
       status: "success",
       message: "Dados atualizados com sucesso.",
-      data: updated,
+      data: { ...updated, cargoId: cargo.id, cargoNome: cargo.nome },
     };
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {

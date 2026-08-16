@@ -16,9 +16,10 @@ function getInitials(name?: string | null) {
 
 interface TopbarProps {
   userName?: string | null;
+  userCargo?: string | null;
 }
 
-export function Topbar({ userName }: TopbarProps) {
+export function Topbar({ userName, userCargo }: TopbarProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -176,7 +177,7 @@ export function Topbar({ userName }: TopbarProps) {
           <span className="ga-avatar">{initials}</span>
           <span className="ga-stack-2" style={{ gap: 1, textAlign: "left" }}>
             <span className="ga-user-name">{displayName}</span>
-            <span className="ga-user-role">Coordenação</span>
+            {userCargo && <span className="ga-user-role">{userCargo}</span>}
           </span>
           <ChevronDown size={12} />
         </button>

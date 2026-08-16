@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import bcrypt from "bcryptjs";
+import { hash, verify } from "@node-rs/argon2";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 
@@ -50,7 +50,7 @@ export async function changePassword(input: {
   }
 
   // A senha atual é sempre conferida antes de qualquer gravação.
-  const senhaAtualValida = await bcrypt.compare(currentPassword, usuario.password);
+  const senhaAtualValida = await verify(usuario.password, currentPassword);
   if (!senhaAtualValida) {
     return {
       success: false,
@@ -60,7 +60,7 @@ export async function changePassword(input: {
   }
 
   // Comparação sempre contra o hash — nunca texto puro contra texto puro.
-  const novaIgualAtual = await bcrypt.compare(newPassword, usuario.password);
+  const novaIgualAtual = await verify(usuario.password, newPassword);
   if (novaIgualAtual) {
     return {
       success: false,
@@ -69,7 +69,7 @@ export async function changePassword(input: {
     };
   }
 
-  const novoHash = await bcrypt.hash(newPassword, 10);
+  const novoHash = await hash(newPassword);
 
   await prisma.usuario.update({
     where: { id: userId },

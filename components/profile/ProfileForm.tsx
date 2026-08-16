@@ -8,20 +8,31 @@ const initialProfileActionState: ProfileActionState = { status: "idle" };
 
 interface ProfileFormInitialData {
   nome: string;
-  sobrenome: string;
   email: string;
   telefone: string | null;
   image: string | null;
+  cargoId: number | null;
 }
 
-function getInitials(nome: string, sobrenome: string) {
-  const first = nome.trim().charAt(0) ?? "";
-  const last = sobrenome.trim().charAt(0) ?? "";
-  const initials = `${first}${last}`.toUpperCase();
-  return initials || "?";
+interface CargoOption {
+  id: number;
+  nome: string;
 }
 
-export function ProfileForm({ initialData }: { initialData: ProfileFormInitialData }) {
+function getInitials(nome: string) {
+  const tokens = nome.trim().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return "?";
+  if (tokens.length === 1) return tokens[0].slice(0, 2).toUpperCase();
+  return `${tokens[0][0]}${tokens[tokens.length - 1][0]}`.toUpperCase();
+}
+
+export function ProfileForm({
+  initialData,
+  cargoOptions,
+}: {
+  initialData: ProfileFormInitialData;
+  cargoOptions: CargoOption[];
+}) {
   const [state, formAction, isPending] = useActionState(
     updateProfile,
     initialProfileActionState,
@@ -32,12 +43,18 @@ export function ProfileForm({ initialData }: { initialData: ProfileFormInitialDa
   // Reflete os dados mais recentes: os valores salvos com sucesso (retornados
   // pela Server Action) têm prioridade sobre os dados originais carregados no
   // servidor, para a tela mostrar o resultado imediatamente após salvar.
-  const currentData = state.status === "success" && state.data ? state.data : initialData;
+  const currentData =
+    state.status === "success" && state.data
+      ? {
+          nome: state.data.nome,
+          email: state.data.email,
+          telefone: state.data.telefone,
+          image: state.data.image,
+          cargoId: state.data.cargoId as number | null,
+        }
+      : initialData;
 
-  const initials = useMemo(
-    () => getInitials(currentData.nome, currentData.sobrenome),
-    [currentData.nome, currentData.sobrenome],
-  );
+  const initials = useMemo(() => getInitials(currentData.nome), [currentData.nome]);
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -100,9 +117,9 @@ export function ProfileForm({ initialData }: { initialData: ProfileFormInitialDa
       </div>
 
       <div className="ga-form-grid">
-        <div className="ga-field">
+        <div className="ga-field ga-col-span-2">
           <label htmlFor="nome" className="ga-label">
-            Nome
+            Nome completo
           </label>
           <input
             id="nome"
@@ -116,26 +133,6 @@ export function ProfileForm({ initialData }: { initialData: ProfileFormInitialDa
           {state.fieldErrors?.nome && (
             <span className="ga-field-error" role="alert">
               {state.fieldErrors.nome}
-            </span>
-          )}
-        </div>
-
-        <div className="ga-field">
-          <label htmlFor="sobrenome" className="ga-label">
-            Sobrenome
-          </label>
-          <input
-            id="sobrenome"
-            name="sobrenome"
-            type="text"
-            className={`ga-input${state.fieldErrors?.sobrenome ? " is-invalid" : ""}`}
-            defaultValue={currentData.sobrenome}
-            disabled={isPending}
-            required
-          />
-          {state.fieldErrors?.sobrenome && (
-            <span className="ga-field-error" role="alert">
-              {state.fieldErrors.sobrenome}
             </span>
           )}
         </div>
@@ -175,6 +172,34 @@ export function ProfileForm({ initialData }: { initialData: ProfileFormInitialDa
           {state.fieldErrors?.telefone && (
             <span className="ga-field-error" role="alert">
               {state.fieldErrors.telefone}
+            </span>
+          )}
+        </div>
+
+        <div className="ga-field ga-col-span-2">
+          <label htmlFor="cargoId" className="ga-label">
+            Cargo
+          </label>
+          <select
+            id="cargoId"
+            name="cargoId"
+            className={`ga-input${state.fieldErrors?.cargoId ? " is-invalid" : ""}`}
+            defaultValue={currentData.cargoId ?? ""}
+            disabled={isPending}
+            required
+          >
+            <option value="" disabled>
+              Selecione um cargo
+            </option>
+            {cargoOptions.map((cargo) => (
+              <option key={cargo.id} value={cargo.id}>
+                {cargo.nome}
+              </option>
+            ))}
+          </select>
+          {state.fieldErrors?.cargoId && (
+            <span className="ga-field-error" role="alert">
+              {state.fieldErrors.cargoId}
             </span>
           )}
         </div>
