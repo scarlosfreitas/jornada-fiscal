@@ -9,7 +9,7 @@ Ao inserir os seeds nas tabelas, os campos a seguir devem ser utilizados:
 
 | criado_por                           | atualizado_por                       | criado_em                            | atualizado_em   | deletado_em     |
 | ------------------------------------ | ------------------------------------ | ------------------------------------ | --------------- | --------------- |
-| 019c0b11-a400-7000-8000-000000000000 | 019c0b11-a400-7000-8000-000000000000 | timestamp atual | timestamp atual | timestamp atual |
+| 019c0b11-a400-7000-8000-000000000000 | 019c0b11-a400-7000-8000-000000000000 | timestamp atual | timestamp atual | Null |
 
 
 ## Tabela: Usuario
@@ -103,6 +103,21 @@ Tabela de Cargos
 | 62       | Membro do Concelho Fiscal            | False         |
 | 101      | Responsável pela Unidade X           | False         |
 
+## Tabela: Usuario_Cargo
+Tabela de Cargos do Usuario
+
+| usr_id                               | cargo_id | vigencia_inicio | vigencia_fim |
+| ------------------------------------ | -------- | --------------- | ------------ |
+| 019c0b11-a400-7000-8000-000000000000 | 0        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000001 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000002 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000003 | 21       | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000011 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000012 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000013 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000014 | 1        | 1/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000015 | 1        | 1/7/2026        |              |
+
 ## Tabela: Setor
 Tabela de Setores de Locatação/Unidade
 
@@ -117,6 +132,21 @@ Tabela de Setores de Locatação/Unidade
 | 21       | 1         | CEPAF       | Centro de Pesquisa e Análise Fiscal |
 | 22       | 2         | NUFES       | Núcleo de Estabelecimento           |
 | 23       | 2         | NUSEG       | Núcleo de Macro Segmentos           |
+
+## Tabela: Usuario_Lotacao
+Tabela de Lotações do Usuário
+
+| usr_id                               | setor_id | vigencia_inicio | vigencia_fim |
+| ------------------------------------ | -------- | --------------- | ------------ |
+| 019c0b11-a400-7000-8000-000000000000 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000001 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000002 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000003 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000011 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000012 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000013 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000014 |          |                 |              |
+| 019c0b11-a400-7000-8000-000000000015 |          |                 |              |
 
 ## Tabela: Perfil
 Tabela de Perfil
