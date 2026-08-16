@@ -2,13 +2,14 @@
 
 **Suspensão de restrições durante o seed:**
 - As tabelas Usuario e Usuario_Origem devem ter as restrições NOT NULL suspensas durante o seed.
+- Inicie a importação pela tabela Usuario
 - Ao concluir o seed, reativar as restrições.
   
 Ao inserir os seeds nas tabelas, os campos a seguir devem ser utilizados:
 
 | criado_por                           | atualizado_por                       | criado_em                            | atualizado_em   | deletado_em     |
 | ------------------------------------ | ------------------------------------ | ------------------------------------ | --------------- | --------------- |
-| 019c0b11-a400-7000-8000-000000000000 | 019c0b11-a400-7000-8000-000000000000 | 019c0b11-a400-7000-8000-000000000000 | timestamp atual | timestamp atual |
+| 019c0b11-a400-7000-8000-000000000000 | 019c0b11-a400-7000-8000-000000000000 | timestamp atual | timestamp atual | timestamp atual |
 
 
 ## Tabela: Usuario
@@ -17,14 +18,49 @@ Tabela de Usuários
 | usr_id                               | usr_username      | usr_nome                         | usr_email                         | usr_email_secundario         | us_password                                                                                       | usr_telefone | usr_image | origem_id |
 | ------------------------------------ | ----------------- | -------------------------------- | --------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------ | --------- | --------- |
 | 019c0b11-a400-7000-8000-000000000000 | admin             | Administrador                    | scarlosfreitas@gmail.com          | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA | 96981411414  |           | 1         |
-| 019c0b11-a400-7000-8000-000000000001 | usuario           | Usuário Comum                    | usuario@email.com                 | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           |           |
-| 019c0b11-a400-7000-8000-000000000002 | auditor           | Auditor                          | auditor@email.com                 | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           |           |
-| 019c0b11-a400-7000-8000-000000000003 | gerente           | Gerente                          | gerente@email.com                 | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           |           |
+| 019c0b11-a400-7000-8000-000000000001 | usuario           | Usuário Comum                    | usuario@email.com                 | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
+| 019c0b11-a400-7000-8000-000000000002 | auditor           | Auditor                          | auditor@email.com                 | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
+| 019c0b11-a400-7000-8000-000000000003 | gerente           | Gerente                          | gerente@email.com                 | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
 | 019c0b11-a400-7000-8000-000000000011 | carlos.silva      | Carlos Vinicius de Freitas Silva | carlos.silva@sefaz.ap.gov.br      | scarlosfreitas@gmail.com     | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA | 96981411414  |           | 1         |
 | 019c0b11-a400-7000-8000-000000000012 | carlos.filgueiras | Carlos Marcelo Filgueiras        | carlos.filgueiras@sefaz.ap.gov.br |                              | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
 | 019c0b11-a400-7000-8000-000000000013 | jean.brito        | Jean Carlos Brito                | jean.brito@sefaz.ap.gov.br        |                              | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
 | 019c0b11-a400-7000-8000-000000000014 | andrei.martins    | Andrei Martins                   | andrei.martins@sefaz.ap.gov.br    |                              | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
-| 019c0b11-a400-7000-8000-000000000015 | beatriz.cruz      | Beatriz Souza                    | beatriz.souza@sefaz.ap.gov.br     |                              | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
+| 019c0b11-a400-7000-8000-000000000015 | beatriz.cruz      | Beatriz Cruz                    | beatriz.cruz@sefaz.ap.gov.br     |                              | $argon2id$v=19$m=65536,t=3,p=4$Hb0e9EC2CGOcaEGyuSYizg$leMiKxtSaRVQt20Adqc+3qqFlEL4qRklUhusiF6kouA |              |           | 1         |
+
+## Tabela: Situacao
+Tabela de Situação
+
+| situacao_id | situacao_nome | situacao_desc |
+| ----------- | ------------- | ------------- |
+| 10          | Criado        | Criado        |
+| 20          | Bloqueado     | Bloqueado     |
+| 30          | Ativo         | Ativo         |
+| 40          | Encerrado     | Encerrado     |
+
+## Tabela: Usuario_Situacao
+Tabela de Origem do Cadastro do Usuário
+
+
+| usr_id                               | situacao_id | vigencia_inicio | vigencia_fim |
+| ------------------------------------ | ----------- | --------------- | ------------ |
+| 019c0b11-a400-7000-8000-000000000000 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000001 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000002 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000003 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000011 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000012 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000013 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000014 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000015 | 10          | 1/7/2026        | 2/7/2026     |
+| 019c0b11-a400-7000-8000-000000000000 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000001 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000002 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000003 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000011 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000012 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000013 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000014 | 30          | 2/7/2026        |              |
+| 019c0b11-a400-7000-8000-000000000015 | 30          | 2/7/2026        |              |
 
 ## Usuario_Origem
 Tabela de Origem do Cadastro do Usuário
@@ -96,57 +132,58 @@ Tabela de Perfil
 | 101       | Auditor       | Perfil Operacional para Auditor                                          |
 | 102       | Fiscal        | Perfil Operacional para Fiscal                                           |
 
+
 ## Tabela: Funcionalidade
 Tabela de Funcionalidades
 
-| funcionalidade_id | funcionalidade_nome                 | funcionalidade_desc |
-| ----------------- | ----------------------------------- | ------------------- |
-| 1                 | Cadastrar usuário                   |                     |
-| 2                 | Cadastrar cargo                     |                     |
-| 3                 | Cadastrar setores                   |                     |
-| 4                 | Cadastrar perfis                    |                     |
-| 5                 | Cadastrar funcionalidade            |                     |
-| 6                 | Validar cadastro                    |                     |
-| 7                 | Bloquear cadastro                   |                     |
-| 8                 | Desbloquear cadastro                |                     |
-| 101               | Criar regra de alerta               |                     |
-| 102               | Iniciar regra de alerta             |                     |
-| 103               | Deletar regra de alerta             |                     |
-| 104               | Criar monitoramento                 |                     |
-| 105               | Iniciar monitoramento               |                     |
-| 106               | Encerrar monitoramento              |                     |
-| 201               | Vizualizar cadastro de usuario      |                     |
-| 202               | Vizualizar cadastro de contribuinte |                     |
-| 203               | Vizualizar recolhimentos            |                     |
-| 204               | Vizualizar declarações              |                     |
-| 205               | Vizualizar timeline                 |                     |
-| 206               | Vizualizar declarações              |                     |
+| func_id | func_nome                           | func_desc |
+| ------- | ----------------------------------- | --------- |
+| 1       | Cadastrar usuário                   |           |
+| 2       | Cadastrar cargo                     |           |
+| 3       | Cadastrar setores                   |           |
+| 4       | Cadastrar perfis                    |           |
+| 5       | Cadastrar funcionalidade            |           |
+| 6       | Validar cadastro                    |           |
+| 7       | Bloquear cadastro                   |           |
+| 8       | Desbloquear cadastro                |           |
+| 101     | Criar regra de alerta               |           |
+| 102     | Iniciar regra de alerta             |           |
+| 103     | Deletar regra de alerta             |           |
+| 104     | Criar monitoramento                 |           |
+| 105     | Iniciar monitoramento               |           |
+| 106     | Encerrar monitoramento              |           |
+| 201     | Vizualizar cadastro de usuario      |           |
+| 202     | Vizualizar cadastro de contribuinte |           |
+| 203     | Vizualizar recolhimentos            |           |
+| 204     | Vizualizar declarações              |           |
+| 205     | Vizualizar timeline                 |           |
+| 206     | Vizualizar declarações              |           |
 
 ## Tabela: Perfil_Funcionalidade
 Tabela de Funcionalidades do Perfil
 
-| perfil_id | funcionalidade_id | vigencia_inicio |
-| --------- | ----------------- | --------------- |
-| 3         | 1                 | 1/7/2026        |
-| 3         | 2                 | 1/7/2026        |
-| 3         | 3                 | 1/7/2026        |
-| 3         | 4                 | 1/7/2026        |
-| 3         | 5                 | 1/7/2026        |
-| 4         | 6                 | 1/7/2026        |
-| 5         | 7                 | 1/7/2026        |
-| 4         | 8                 | 1/7/2026        |
-| 101       | 101               | 1/7/2026        |
-| 101       | 102               | 1/7/2026        |
-| 101       | 103               | 1/7/2026        |
-| 101       | 104               | 1/7/2026        |
-| 101       | 105               | 1/7/2026        |
-| 101       | 106               | 1/7/2026        |
-| 101       | 201               | 1/7/2026        |
-| 101       | 202               | 1/7/2026        |
-| 101       | 203               | 1/7/2026        |
-| 101       | 204               | 1/7/2026        |
-| 101       | 205               | 1/7/2026        |
-| 101       | 206               | 1/7/2026        |
+| perfil_id | func_id | vigencia_inicio |
+| --------- | ------- | --------------- |
+| 3         | 1       | 1/7/2026        |
+| 3         | 2       | 1/7/2026        |
+| 3         | 3       | 1/7/2026        |
+| 3         | 4       | 1/7/2026        |
+| 3         | 5       | 1/7/2026        |
+| 4         | 6       | 1/7/2026        |
+| 5         | 7       | 1/7/2026        |
+| 4         | 8       | 1/7/2026        |
+| 101       | 101     | 1/7/2026        |
+| 101       | 102     | 1/7/2026        |
+| 101       | 103     | 1/7/2026        |
+| 101       | 104     | 1/7/2026        |
+| 101       | 105     | 1/7/2026        |
+| 101       | 106     | 1/7/2026        |
+| 101       | 201     | 1/7/2026        |
+| 101       | 202     | 1/7/2026        |
+| 101       | 203     | 1/7/2026        |
+| 101       | 204     | 1/7/2026        |
+| 101       | 205     | 1/7/2026        |
+| 101       | 206     | 1/7/2026        |
 
 ## Tabela: Usuario_Perfil
 Tabela de Perfis do Usuário

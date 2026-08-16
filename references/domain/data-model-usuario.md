@@ -10,8 +10,8 @@ Tabela de Usuários
 | usr_nome             | string(100) | NOT NULL                              | Nome completo                                                    |
 | usr_email            | string(120) | NOT NULL, UNIQUE                      | Email                                                            |
 | usr_email_secundario | string(120) |                                       | Email                                                            |
-| us_password          | string      | NOT NULL                              | Hash criptográfico da senha utilizando o algoritmo **Argon2id**. |
-| usr_telefone         | string(60)  | NOT NULL                              | Telefone                                                         |
+| usr_password         | string      | NOT NULL                              | Hash criptográfico da senha utilizando o algoritmo **Argon2id**. |
+| usr_telefone         | string(60)  |                                       | Telefone                                                         |
 | usr_image            | string      |                                       | URL ou caminho do avatar do usuário.                             |
 | origem_id            | inteiro     | FK(Usuario_Origem.origem_id) NOT NULL | Id  do tipo de origem do cadastro                                |
 | criado_por           | UUIDv7      | FK(Usuario.usr_id) NOT NULL           | UUIDv7 do usuario que criou o registro                           |
@@ -20,7 +20,35 @@ Tabela de Usuários
 | atualizado_em        | timestamp   | NOT NULL                              | Timestamp com a data de atualização ou criação                   |
 | deletado_em          | timestamp   |                                       | Timestamp como flag soft-delete (NULL = registro válido)         |
 
-## Usuario_Origem
+## Tabela: Usuario_Situacao
+Tabela de Situação
+
+| Coluna          | Tipo      | Chave/Restrição                         | Descrição                                                |
+| --------------- | --------- | --------------------------------------- | -------------------------------------------------------- |
+| usr_id          | UUIDv7    | PK Composta / FK(Usuario.usr_id)        | Id do Usuário                                            |
+| situacao_id     | inteiro   | PK Composta / FK (Situacao.situacao_id) | Id da situação do usuário                                |
+| vigencia_inicio | timestamp | PK Composta NOT NULL                    | Timestamp de início da vigência do vinculo               |
+| vigencia_fim    | timestamp |                                         | Timestamp de fim da vigência do vinculo (Null = vigente) |
+| criado_por      | UUIDv7    | FK(Usuario.usr_id) NOT NULL             | UUIDv7 do usuario que criou o registro                   |
+| atualizado_por  | UUIDv7    | FK(Usuario.usr_id) NOT NULL             | UUIDv7 do usuário que será atualizado a cada modificação |
+| criado_em       | timestamp | NOT NULL                                | Timestamp da data de criação                             |
+| atualizado_em   | timestamp | NOT NULL                                | Timestamp com a data de atualização ou criação           |
+| deletado_em     | timestamp |                                         | Timestamp como flag soft-delete (NULL = registro válido) |
+
+## Tabela: Usuario_Origem
+Tabela de Situações do Usuário
+
+| Coluna         | Tipo       | Chave/Restrição             | Descrição                                                |
+| -------------- | ---------- | --------------------------- | -------------------------------------------------------- |
+| origem_id      | inteiro    | PK                          | Id do tipo de origem do codastro                         |
+| origem_nome    | string(60) | NOT NULL                    | Nome da origem do cadastro                               |
+| criado_por     | UUIDv7     | FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuario que criou o registro                   |
+| atualizado_por | UUIDv7     | FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuário que será atualizado a cada modificação |
+| criado_em      | timestamp  | NOT NULL                    | Timestamp da data de criação                             |
+| atualizado_em  | timestamp  | NOT NULL                    | Timestamp com a data de atualização ou criação           |
+| deletado_em    | timestamp  |                             | Timestamp como flag soft-delete (NULL = registro válido) |
+  
+## Tabela: Usuario_Origem
 Tabela de Origem do Cadastro do Usuário
 
 | Coluna         | Tipo       | Chave/Restrição             | Descrição                                                |
@@ -82,7 +110,7 @@ Tabela de Cargos do Usuario
 | --------------- | --------- | ----------------------------------------- | -------------------------------------------------------- |
 | usr_id          | UUIDv7    | PK Composta / FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuario                                        |
 | cargo_id        | inteiro   | PK Composta / FK(Cargo.cargo_id) NOT NULL | Id do cargo       |
-| vigencia_inicio | timestamp | PK Composta NOT NULL                      | Timestamp de inínio da vigência do vinculo               |
+| vigencia_inicio | timestamp | PK Composta NOT NULL                      | Timestamp de início da vigência do vinculo               |
 | vigencia_fim    | timestamp |                                           | Timestamp de fim da vigência do vinculo (Null = vigente) |
 | criado_por      | UUIDv7    | FK(Usuario.usr_id) NOT NULL               | UUIDv7 do usuario que criou o registro                   |
 | atualizado_por  | UUIDv7    | FK(Usuario.usr_id) NOT NULL               | UUIDv7 do usuário que será atualizado a cada modificação |
@@ -112,7 +140,7 @@ Tabela de Lotações do Usuário
 | --------------- | --------- | ----------------------------------------- | -------------------------------------------------------- |
 | usr_id          | UUIDv7    | PK Composta / FK(Usuario.usr_id) NOT NULL | UUIDv7 do usuario                                        |
 | setor_id        | inteiro   | PK Composta / FK(Setor.setor_id) NOT NULL | Id do setor                                              |
-| vigencia_inicio | timestamp | PK Composta NOT NULL                      | Timestamp de inínio da vigência do vinculo               |
+| vigencia_inicio | timestamp | PK Composta NOT NULL                      | Timestamp de início da vigência do vinculo               |
 | vigencia_fim    | timestamp |                                           | Timestamp de fim da vigência do vinculo (Null = vigente) |
 | criado_por      | UUIDv7    | FK(Usuario.usr_id) NOT NULL               | UUIDv7 do usuario que criou o registro                   |
 | atualizado_por  | UUIDv7    | FK(Usuario.usr_id) NOT NULL               | UUIDv7 do usuário que será atualizado a cada modificação |
@@ -170,7 +198,7 @@ Tabela de Funcionalidades do Perfil
 | --------------- | --------- | ------------------------------------------------- | -------------------------------------------------------- |
 | perfil_id       | inteiro   | PK Composta / FK(Perfil.perfil_id) NOT NULL       | Id do Perfil                                             |
 | func_id         | inteiro   | PK Composta / FK(Funcionalidade.func_id) NOT NULL | Id da funcionalidade                                     |
-| vigencia_inicio | timestamp | PK Composta NOT NULL                              | Timestamp de inínio da vigência do vinculo               |
+| vigencia_inicio | timestamp | PK Composta NOT NULL                              | Timestamp de início da vigência do vinculo               |
 | vigencia_fim    | timestamp |                                                   | Timestamp de fim da vigência do vinculo (Null = vigente) |
 | criado_por      | UUIDv7    | FK(Usuario.usr_id) NOT NULL                       | UUIDv7 do usuario que criou o registro                   |
 | atualizado_por  | UUIDv7    | FK(Usuario.usr_id) NOT NULL                       | UUIDv7 do usuário que será atualizado a cada modificação |
@@ -185,7 +213,7 @@ Tabela de Perfis do Usuário
 | --------------- | --------- | ------------------------------------------- | -------------------------------------------------------- |
 | usr_id          | UUIDv7    | PK Composta / FK(Usuario.usr_id) NOT NULL   | UUIDv7 do usuario                                        |
 | perfil_id       | inteiro   | PK Composta / FK(Perfil.perfil_id) NOT NULL | Id do Perfil                                             |
-| vigencia_inicio | timestamp | PK Composta NOT NULL                        | Timestamp de inínio da vigência do vinculo               |
+| vigencia_inicio | timestamp | PK Composta NOT NULL                        | Timestamp de início da vigência do vinculo               |
 | vigencia_fim    | timestamp |                                             | Timestamp de fim da vigência do vinculo (Null = vigente) |
 | criado_por      | UUIDv7    | FK(Usuario.usr_id) NOT NULL                 | UUIDv7 do usuario que criou o registro                   |
 | atualizado_por  | UUIDv7    | FK(Usuario.usr_id) NOT NULL                 | UUIDv7 do usuário que será atualizado a cada modificação |
