@@ -408,6 +408,14 @@ input::placeholder, textarea::placeholder { color: var(--ga-gray-400); }
 .ga-input.is-invalid, .ga-select.is-invalid { border-color: var(--ga-danger); }
 .ga-input-mono { font-family: var(--ga-font-mono); }
 .ga-select-sm, .ga-input-sm { height: 36px; font-size: var(--ga-text-body-sm); }
+.ga-input-has-toggle { padding-right: 40px; }
+.ga-input-toggle {
+  position: absolute; top: 50%; right: var(--ga-space-3); transform: translateY(-50%);
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; padding: 0; margin: 0;
+  color: var(--ga-gray-400); cursor: pointer; line-height: 0;
+}
+.ga-input-toggle:hover { color: var(--ga-gray-700); }
 
 .ga-checkbox {
   width: 16px; height: 16px; flex: none;
@@ -632,6 +640,15 @@ input::placeholder, textarea::placeholder { color: var(--ga-gray-400); }
   font: 500 13px/1 var(--ga-font-body);
 }
 .ga-toast::before { content: ""; width: 8px; height: 8px; border-radius: var(--ga-radius-pill); background: var(--ga-accent-500); }
+
+/* react-hot-toast: mesmos tokens visuais de .ga-toast, sem posicionamento
+   (o próprio <Toaster> cuida de position/transform/animação). */
+.ga-toast-msg {
+  background: var(--ga-ink) !important; color: var(--ga-white) !important;
+  border-radius: var(--ga-radius-lg) !important; padding: 13px 18px !important;
+  box-shadow: 0 20px 48px rgba(26, 30, 40, .28) !important;
+  font: 500 13px/1.4 var(--ga-font-body) !important;
+}
 
 /* --------------------------------------------------------------------------
    11. Linha do tempo (histórico do contribuinte)

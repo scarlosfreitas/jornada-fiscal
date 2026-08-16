@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./gestor-alertas.css";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -34,7 +35,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         } as React.CSSProperties
       }
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster
+          position="bottom-center"
+          toastOptions={{ className: "ga-toast-msg", duration: 4000 }}
+        />
+      </body>
     </html>
   );
 }
