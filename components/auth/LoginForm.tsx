@@ -22,20 +22,25 @@ export function LoginForm() {
     setIsSubmitting(true);
     setHasError(false);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    if (!result || result.error) {
+      if (!result || result.error) {
+        setHasError(true);
+        return;
+      }
+
+      router.push(callbackUrl);
+      router.refresh();
+    } catch {
       setHasError(true);
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    router.push(callbackUrl);
-    router.refresh();
   }
 
   return (
