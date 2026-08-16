@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getDashboardData, type Period } from "@/lib/mock/dashboard";
+import { ROUTES } from "@/lib/routes";
 import { PageHead } from "./PageHead";
 import { KpiGrid } from "./KpiGrid";
 import { CanaisCard } from "./CanaisCard";
@@ -69,7 +70,7 @@ export function PainelOperacional({ children }: { children: ReactNode }) {
               <span className="ga-card-title">Regras que mais disparam</span>
               <span className="ga-caption">Alertas emitidos {data.periodLabel}</span>
             </div>
-            <Link href="/regras" className="ga-body-sm">
+            <Link href={ROUTES.regrasDeAlerta} className="ga-body-sm">
               Ver regras
             </Link>
           </div>

@@ -10,6 +10,7 @@ O sistema se apoia em quatro pilares:
 2. **Ordens de serviço** — gestão e acompanhamento das intervenções (vistorias em trânsito, em estabelecimento, sigilosas, e mandados/MPF) originadas pelos alertas.
 3. **Canais de comunicação** — Telegram, tela do sistema, e-mail, Prodoc e aviso pessoal, usados para notificar alertas e prazos.
 4. **Jornada do contribuinte** — módulo tipo CRM que acompanha a história do contribuinte (situação cadastral, societária, contadores, procedimentos fiscais, notificações) e permite anotações internas dos fiscais.
+4. **Operador do SATE** — Módulo responsável por autamatizar a inserção de dados no SATE. Atravez do controle do navegador, ele faz a inserção e o usuario revisa e da ok. Um auto infração é feito fora e inserido pelo operador.
 
 O acesso a dados do sistema corporativo (SATE) não é feito diretamente ao banco: uma camada de API de integração, desenvolvida em projeto separado, expõe essas informações ao Gertor de Alertas. Da mesma forma, a plataforma de dados moderna (Kubernetes, MinIO, Kafka, Iceberg, Trino) que sustenta a análise em escala é um projeto independente, fora do escopo deste PRD.
 
