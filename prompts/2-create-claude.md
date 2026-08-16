@@ -11,4 +11,4 @@ Não faça nenhuma suposição que não possa ser deduzida desses arquivos.
 
 Se houver alguma dúvida, me faça perguntas.
 
-Após compreender o domínio, construa o CLAUDE.md
+Após compreender o domínio, atualize o CLAUDE.md
