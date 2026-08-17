@@ -121,7 +121,9 @@ A barra superior SHALL oferecer um campo de busca de funcionalidades do sistema,
 
 ### Requirement: Notificações e identificação do usuário na barra superior
 
-A barra superior SHALL exibir um acesso a notificações e a identificação da pessoa usuária autenticada com iniciais, nome e perfil. O acesso a notificações SHALL sinalizar visualmente a existência de notificações não lidas. As iniciais e o nome exibidos SHALL corresponder à pessoa usuária da sessão autenticada, nunca a um valor fixo.
+A barra superior SHALL exibir um acesso a notificações e a identificação da pessoa usuária autenticada com iniciais, nome e cargo. O acesso a notificações SHALL sinalizar visualmente a existência de notificações não lidas. As iniciais, o nome e o cargo exibidos SHALL corresponder à pessoa usuária da sessão autenticada, nunca a um valor fixo.
+
+O cargo exibido SHALL ser o cargo comissionado vigente mais recente da pessoa usuária; não havendo cargo comissionado vigente, SHALL ser o cargo efetivo vigente.
 
 O menu do usuário SHALL oferecer três acessos, cada um com ícone: Perfil, Alterar senha e Sair. Perfil e Alterar senha SHALL navegar para as telas correspondentes. Sair SHALL encerrar a sessão da pessoa usuária e levá-la à tela de entrada.
 
@@ -133,7 +135,22 @@ O menu do usuário SHALL oferecer três acessos, cada um com ícone: Perfil, Alt
 #### Scenario: Identificação da pessoa usuária
 
 - **WHEN** uma tela do produto é exibida
-- **THEN** a barra superior mostra as iniciais e o nome da pessoa usuária autenticada, obtidos da sessão
+- **THEN** a barra superior mostra as iniciais, o nome e o cargo da pessoa usuária autenticada, obtidos da sessão
+
+#### Scenario: Cargo comissionado tem precedência
+
+- **WHEN** a pessoa usuária autenticada possui cargo comissionado vigente
+- **THEN** a barra superior exibe o cargo comissionado vigente mais recente
+
+#### Scenario: Sem cargo comissionado
+
+- **WHEN** a pessoa usuária autenticada não possui cargo comissionado vigente, apenas cargo efetivo vigente
+- **THEN** a barra superior exibe o cargo efetivo
+
+#### Scenario: Sem cargo algum
+
+- **WHEN** a pessoa usuária autenticada não possui nenhum cargo vigente
+- **THEN** a barra superior exibe nome e iniciais normalmente, sem apresentar cargo
 
 #### Scenario: Abrir o menu do usuário
 

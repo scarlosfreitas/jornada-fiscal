@@ -7,12 +7,17 @@ Permite que a pessoa usuária autenticada visualize e mantenha atualizados os pr
 
 ### Requirement: Visualização dos próprios dados cadastrais
 
-O sistema SHALL apresentar, na tela de perfil, os dados cadastrais da pessoa usuária autenticada — nome, sobrenome, e-mail, telefone e imagem de perfil — obtidos a partir da sessão e da base. A senha SHALL nunca ser exibida ou pré-preenchida nessa tela.
+O sistema SHALL apresentar, na tela de perfil, os dados cadastrais da pessoa usuária autenticada — nome completo, e-mail, telefone, imagem de perfil e cargo vigente — obtidos a partir da sessão e da base. A senha SHALL nunca ser exibida ou pré-preenchida nessa tela.
 
 #### Scenario: Abertura da tela de perfil
 
 - **WHEN** a pessoa usuária autenticada abre a tela de perfil
-- **THEN** o formulário aparece pré-preenchido com o nome, sobrenome, e-mail, telefone e imagem atuais dela, sem qualquer campo de senha
+- **THEN** o formulário aparece pré-preenchido com o nome completo, e-mail, telefone, imagem e cargo vigente dela, sem qualquer campo de senha
+
+#### Scenario: Pessoa usuária sem cargo
+
+- **WHEN** a pessoa usuária autenticada ainda não possui cargo registrado
+- **THEN** a tela de perfil é exibida normalmente, com o campo de cargo vazio e aguardando preenchimento
 
 #### Scenario: Acesso exige sessão
 
@@ -21,12 +26,17 @@ O sistema SHALL apresentar, na tela de perfil, os dados cadastrais da pessoa usu
 
 ### Requirement: Atualização dos próprios dados cadastrais
 
-O sistema SHALL permitir que a pessoa usuária autenticada atualize seu nome, sobrenome, e-mail, telefone e imagem de perfil. A identidade da pessoa a ser atualizada SHALL ser determinada pela sessão no servidor, nunca por um identificador enviado pelo cliente — a pessoa usuária SHALL só conseguir alterar o próprio cadastro. Um e-mail alterado para um já usado por outra pessoa SHALL ser recusado. Essa operação SHALL não alterar a senha da pessoa usuária.
+O sistema SHALL permitir que a pessoa usuária autenticada atualize seu nome completo, e-mail, telefone, imagem de perfil e cargo. A identidade da pessoa a ser atualizada SHALL ser determinada pela sessão no servidor, nunca por um identificador enviado pelo cliente — a pessoa usuária SHALL só conseguir alterar o próprio cadastro. Um e-mail alterado para um já usado por outra pessoa SHALL ser recusado. Toda atualização SHALL exigir cargo informado. Essa operação SHALL não alterar a senha da pessoa usuária.
 
 #### Scenario: Atualização bem-sucedida
 
-- **WHEN** a pessoa usuária autenticada altera um ou mais dos campos permitidos e confirma
-- **THEN** o cadastro dela é atualizado, a tela mostra confirmação de sucesso e os dados exibidos passam a refletir os novos valores, inclusive nome e iniciais na barra superior
+- **WHEN** a pessoa usuária autenticada altera um ou mais dos campos permitidos, com cargo informado, e confirma
+- **THEN** o cadastro dela é atualizado, a tela mostra confirmação de sucesso e os dados exibidos passam a refletir os novos valores, inclusive nome, iniciais e cargo na barra superior
+
+#### Scenario: Atualização sem cargo informado
+
+- **WHEN** a pessoa usuária tenta salvar alterações sem informar cargo
+- **THEN** a atualização é recusada e a tela indica que o cargo é obrigatório
 
 #### Scenario: E-mail já utilizado
 
@@ -42,6 +52,25 @@ O sistema SHALL permitir que a pessoa usuária autenticada atualize seu nome, so
 
 - **WHEN** a pessoa usuária salva alterações na tela de perfil
 - **THEN** a senha cadastrada permanece a mesma
+
+### Requirement: Um único cargo efetivo vigente
+
+Uma pessoa usuária SHALL ter no máximo um cargo efetivo vigente por vez, e SHALL poder ter nenhum ou vários cargos comissionados vigentes. Ao registrar um novo cargo efetivo, o cargo efetivo anterior SHALL ser encerrado, preservando o histórico.
+
+#### Scenario: Substituição do cargo efetivo
+
+- **WHEN** um novo cargo efetivo é registrado para uma pessoa que já possui um cargo efetivo vigente
+- **THEN** o cargo efetivo anterior é encerrado e apenas o novo permanece vigente
+
+#### Scenario: Vários cargos comissionados
+
+- **WHEN** uma pessoa usuária recebe mais de um cargo comissionado
+- **THEN** todos permanecem vigentes simultaneamente
+
+#### Scenario: Apenas cargo comissionado
+
+- **WHEN** uma pessoa usuária possui cargo comissionado e nenhum cargo efetivo
+- **THEN** essa situação é aceita pelo sistema
 
 ### Requirement: Perfil de acesso não é editável na tela de perfil
 

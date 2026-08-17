@@ -8,7 +8,7 @@ Define a estrutura de URLs do Gertor de Alertas: o que é servido na raiz do dom
 
 ### Requirement: Separação entre raiz pública e prefixo da aplicação
 
-A raiz do domínio SHALL servir a área pública do produto. Todas as telas da aplicação SHALL viver sob o prefixo `/app`. O painel operacional SHALL ser o índice desse prefixo, respondendo em `/app`.
+A raiz do domínio SHALL servir a página institucional pública do produto. Todas as telas da aplicação SHALL viver sob o prefixo `/app`. O painel operacional SHALL ser o índice desse prefixo, respondendo em `/app`. A tela de entrada (login) SHALL viver em `/login`, fora do prefixo `/app`.
 
 #### Scenario: Painel operacional no índice da aplicação
 
@@ -29,6 +29,11 @@ A raiz do domínio SHALL servir a área pública do produto. Todas as telas da a
 
 - **WHEN** a raiz do domínio é exibida
 - **THEN** a barra lateral, a barra superior e o rodapé da aplicação não são renderizados
+
+#### Scenario: Login fora do prefixo da aplicação
+
+- **WHEN** alguém acessa `/login`
+- **THEN** a URL não começa com `/app`
 
 ### Requirement: Fonte única para as rotas
 
