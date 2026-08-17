@@ -1,4 +1,5 @@
 export const APP_BASE = "/app";
+export const LOGIN_ROUTE = "/login";
 
 export const ROUTES = {
   painel: APP_BASE,
