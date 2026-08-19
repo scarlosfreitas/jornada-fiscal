@@ -1,46 +1,4 @@
-## Purpose
-
-Define o invólucro visual e de navegação compartilhado por todas as telas autenticadas do Gertor de Alertas: barra lateral de navegação, barra superior, área de conteúdo e rodapé. Garante que toda página do produto apareça dentro da mesma moldura, com navegação e identidade visual consistentes.
-
-## Requirements
-
-### Requirement: Moldura única para as telas do produto
-
-Toda tela do produto SHALL ser apresentada dentro de uma moldura composta por barra lateral, barra superior, área de conteúdo e rodapé, nessa disposição. O conteúdo específico de cada tela SHALL ocupar apenas a área de conteúdo; a moldura SHALL permanecer visualmente idêntica entre telas.
-
-#### Scenario: Abertura de uma tela do produto
-
-- **WHEN** a pessoa usuária abre qualquer tela do produto
-- **THEN** a barra lateral aparece à esquerda ocupando a altura total da janela, a barra superior aparece no topo da coluna restante, o conteúdo da tela aparece abaixo dela e o rodapé aparece ao final da mesma coluna
-
-#### Scenario: Navegação entre telas
-
-- **WHEN** a pessoa usuária navega de uma tela do produto para outra
-- **THEN** apenas a área de conteúdo é substituída, e barra lateral, barra superior e rodapé permanecem com a mesma aparência e o mesmo estado de rolagem da janela no topo
-
-#### Scenario: Barra superior fixa durante a rolagem
-
-- **WHEN** a pessoa usuária rola uma tela cujo conteúdo excede a altura da janela
-- **THEN** a barra superior permanece visível no topo e a barra lateral permanece visível à esquerda
-
-#### Scenario: Impressão da tela
-
-- **WHEN** a pessoa usuária imprime uma tela do produto
-- **THEN** barra lateral, barra superior e rodapé são omitidos e apenas a área de conteúdo é impressa
-
-### Requirement: Identidade e idioma da aplicação
-
-A aplicação SHALL se identificar como produto "Gertor de Alertas" e SHALL declarar português do Brasil como idioma do documento.
-
-#### Scenario: Título da aba do navegador
-
-- **WHEN** a pessoa usuária abre qualquer tela do produto
-- **THEN** o título exibido pelo navegador identifica o Gertor de Alertas, e não o texto padrão do gerador de projeto
-
-#### Scenario: Idioma declarado
-
-- **WHEN** um leitor de tela ou o navegador inspeciona o documento
-- **THEN** o idioma declarado é `pt-BR`
+## MODIFIED Requirements
 
 ### Requirement: Navegação principal na barra lateral
 
@@ -98,6 +56,16 @@ A barra lateral SHALL oferecer um controle "Recolher menu" no seu rodapé. Quand
 
 - **WHEN** a pessoa usuária recolhe a barra lateral e em seguida navega para outra tela do produto
 - **THEN** a barra lateral permanece recolhida
+
+## REMOVED Requirements
+
+### Requirement: Busca de funcionalidade na barra superior
+
+**Reason**: a busca de funcionalidade passa a ficar no rodapé da barra lateral (ver "Busca de funcionalidade na barra lateral"); a barra superior passa a oferecer busca de contribuinte (ver "Busca de contribuinte na barra superior").
+
+**Migration**: nenhuma migração de dados necessária — é realocação de um componente de UI existente para outro contêiner, com o mesmo conjunto de funcionalidades pesquisáveis.
+
+## ADDED Requirements
 
 ### Requirement: Busca de funcionalidade na barra lateral
 
@@ -171,70 +139,3 @@ Cada item do dropdown SHALL exibir a razão social do contribuinte como título,
 
 - **WHEN** a pessoa usuária pressiona `Esc` ou aciona a área fora do dropdown com ele aberto
 - **THEN** o dropdown é fechado
-
-### Requirement: Notificações e identificação do usuário na barra superior
-
-A barra superior SHALL exibir um acesso a notificações e a identificação da pessoa usuária autenticada com iniciais, nome e cargo. O acesso a notificações SHALL sinalizar visualmente a existência de notificações não lidas. As iniciais, o nome e o cargo exibidos SHALL corresponder à pessoa usuária da sessão autenticada, nunca a um valor fixo.
-
-O cargo exibido SHALL ser o cargo comissionado vigente mais recente da pessoa usuária; não havendo cargo comissionado vigente, SHALL ser o cargo efetivo vigente.
-
-O menu do usuário SHALL oferecer três acessos, cada um com ícone: Perfil, Alterar senha e Sair. Perfil e Alterar senha SHALL navegar para as telas correspondentes. Sair SHALL encerrar a sessão da pessoa usuária e levá-la à tela de entrada.
-
-#### Scenario: Sinalização de notificações pendentes
-
-- **WHEN** existem notificações não lidas
-- **THEN** o acesso a notificações exibe um indicador visual de pendência
-
-#### Scenario: Identificação da pessoa usuária
-
-- **WHEN** uma tela do produto é exibida
-- **THEN** a barra superior mostra as iniciais, o nome e o cargo da pessoa usuária autenticada, obtidos da sessão
-
-#### Scenario: Cargo comissionado tem precedência
-
-- **WHEN** a pessoa usuária autenticada possui cargo comissionado vigente
-- **THEN** a barra superior exibe o cargo comissionado vigente mais recente
-
-#### Scenario: Sem cargo comissionado
-
-- **WHEN** a pessoa usuária autenticada não possui cargo comissionado vigente, apenas cargo efetivo vigente
-- **THEN** a barra superior exibe o cargo efetivo
-
-#### Scenario: Sem cargo algum
-
-- **WHEN** a pessoa usuária autenticada não possui nenhum cargo vigente
-- **THEN** a barra superior exibe nome e iniciais normalmente, sem apresentar cargo
-
-#### Scenario: Abrir o menu do usuário
-
-- **WHEN** a pessoa usuária aciona a área de identificação
-- **THEN** o menu do usuário é exibido, com os acessos Perfil, Alterar senha e Sair
-
-#### Scenario: Fechar o menu do usuário
-
-- **WHEN** a pessoa usuária aciona a área de identificação novamente, pressiona `Esc` ou aciona a área fora do menu
-- **THEN** o menu do usuário é fechado
-
-#### Scenario: Selecionar Perfil
-
-- **WHEN** a pessoa usuária aciona o item Perfil no menu do usuário
-- **THEN** o sistema navega para a tela de perfil e o menu do usuário é fechado
-
-#### Scenario: Selecionar Alterar senha
-
-- **WHEN** a pessoa usuária aciona o item Alterar senha no menu do usuário
-- **THEN** o sistema navega para a tela de alteração de senha e o menu do usuário é fechado
-
-#### Scenario: Selecionar Sair
-
-- **WHEN** a pessoa usuária aciona o item Sair no menu do usuário
-- **THEN** a sessão é encerrada, o menu do usuário é fechado e a pessoa é levada à tela de entrada
-
-### Requirement: Rodapé institucional
-
-O rodapé SHALL exibir a identificação do produto com aviso de direitos reservados e a versão da aplicação, em português do Brasil.
-
-#### Scenario: Conteúdo do rodapé
-
-- **WHEN** uma tela do produto é exibida
-- **THEN** o rodapé mostra "© 2026 Gertor de Alertas · Todos os direitos reservados" à esquerda e a versão da aplicação à direita

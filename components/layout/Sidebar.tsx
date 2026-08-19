@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronDown, Menu } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowRight, ChevronDown, Menu, Search } from "lucide-react";
 import { LogoIcon } from "@/components/icons/LogoIcon";
-import { NAV_ITEMS } from "./nav-data";
+import { APP_FEATURES, NAV_ITEMS } from "./nav-data";
 import { ROUTES } from "@/lib/routes";
 
 /**
@@ -29,11 +29,47 @@ function findActiveParentKey(pathname: string): string | null {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   // Overrides explícitos do usuário para grupos; grupos sem override seguem
   // o padrão (aberto quando a rota atual corresponde a um subitem).
   const [groupOverrides, setGroupOverrides] = useState<Record<string, boolean>>({});
   const activeParentKey = findActiveParentKey(pathname);
+
+  const [featQuery, setFeatQuery] = useState("");
+  const [featSearchOpen, setFeatSearchOpen] = useState(false);
+  const featSearchRef = useRef<HTMLDivElement>(null);
+
+  const featResults = useMemo(() => {
+    const q = featQuery.trim().toLowerCase();
+    if (!q) return APP_FEATURES;
+    return APP_FEATURES.filter((feature) =>
+      `${feature.label} ${feature.path} ${feature.module}`.toLowerCase().includes(q),
+    );
+  }, [featQuery]);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setFeatSearchOpen(false);
+    }
+    function onPointerDown(e: PointerEvent) {
+      if (featSearchRef.current && !featSearchRef.current.contains(e.target as Node)) {
+        setFeatSearchOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, []);
+
+  function goToFeature(href: string) {
+    setFeatSearchOpen(false);
+    setFeatQuery("");
+    router.push(href);
+  }
 
   function isGroupOpen(key: string) {
     return groupOverrides[key] ?? key === activeParentKey;
@@ -114,6 +150,73 @@ export function Sidebar() {
       </nav>
 
       <div className="ga-sidebar-footer">
+        {!collapsed && (
+          <div className="ga-relative" ref={featSearchRef}>
+            <div className="ga-sidebar-search">
+              <Search width={13} height={13} color="rgba(255,255,255,.5)" style={{ flex: "none" }} />
+              <input
+                value={featQuery}
+                onChange={(e) => {
+                  setFeatQuery(e.target.value);
+                  setFeatSearchOpen(true);
+                }}
+                onFocus={() => setFeatSearchOpen(true)}
+                placeholder="Busca funcionalidade"
+                aria-label="Busca funcionalidade"
+              />
+            </div>
+            {featSearchOpen && (
+              <div
+                className="ga-menu"
+                style={{ left: 0, right: "auto", bottom: 46, top: "auto", width: 320, maxHeight: 320, overflow: "auto" }}
+              >
+                <div className="ga-row-between" style={{ padding: "8px 10px 6px" }}>
+                  <span className="ga-overline">Funcionalidades</span>
+                  <span
+                    className="ga-caption"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setFeatSearchOpen(false)}
+                  >
+                    esc
+                  </span>
+                </div>
+                {featResults.map((feature) => (
+                  <button
+                    key={feature.key}
+                    type="button"
+                    className="ga-menu-item ga-row"
+                    onClick={() => goToFeature(feature.href)}
+                  >
+                    <span
+                      style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: 7,
+                        border: "1px solid var(--ga-primary-200)",
+                        background: "var(--ga-primary-50)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flex: "none",
+                      }}
+                    >
+                      <ArrowRight size={12} color="#2A45D4" strokeWidth={2.2} />
+                    </span>
+                    <span className="ga-stack-2 ga-grow" style={{ gap: 2, minWidth: 0 }}>
+                      <span className="ga-cell-primary">{feature.label}</span>
+                      <span className="ga-caption ga-truncate">{feature.path}</span>
+                    </span>
+                  </button>
+                ))}
+                {featResults.length === 0 && (
+                  <div className="ga-body-sm ga-muted" style={{ padding: "14px 10px 16px" }}>
+                    Nenhuma funcionalidade encontrada.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
         <button
           type="button"
           className="ga-nav-item"

@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Search, ArrowRight, Bell, ChevronDown, User, KeyRound, LogOut } from "lucide-react";
-import { APP_FEATURES } from "./nav-data";
+import { Search, Bell, ChevronDown, User, KeyRound, LogOut } from "lucide-react";
+import { getContribuintesRecentes, searchContribuintes } from "@/lib/mock/contribuintes";
 import { ROUTES } from "@/lib/routes";
 
 function getInitials(name?: string | null) {
@@ -33,20 +33,14 @@ export function Topbar({ userName, userCargo }: TopbarProps) {
   const userContainerRef = useRef<HTMLDivElement>(null);
 
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return APP_FEATURES;
-    return APP_FEATURES.filter((feature) =>
-      `${feature.label} ${feature.path} ${feature.module}`.toLowerCase().includes(q),
-    );
+    const q = query.trim();
+    return q ? searchContribuintes(q) : getContribuintesRecentes();
   }, [query]);
+  const resultsHeading = query.trim() ? "Resultados" : "Contribuintes recentes";
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setSearchOpen(true);
-        searchInputRef.current?.focus();
-      } else if (e.key === "Escape") {
+      if (e.key === "Escape") {
         setSearchOpen(false);
         setUserMenuOpen(false);
       }
@@ -75,7 +69,7 @@ export function Topbar({ userName, userCargo }: TopbarProps) {
     };
   }, []);
 
-  function goToFeature(href: string) {
+  function goToContribuinte(href: string) {
     setSearchOpen(false);
     setQuery("");
     router.push(href);
@@ -104,9 +98,8 @@ export function Topbar({ userName, userCargo }: TopbarProps) {
               setSearchOpen(true);
             }}
             onFocus={() => setSearchOpen(true)}
-            placeholder="Buscar funcionalidade — ex. regras, monitoramento, OS"
+            placeholder="Buscar contribuinte — ex. CNPJ, razão social, sócio, contador"
           />
-          <span className="ga-search-kbd">⌘K</span>
         </div>
         {searchOpen && (
           <div
@@ -114,7 +107,7 @@ export function Topbar({ userName, userCargo }: TopbarProps) {
             style={{ left: 0, right: "auto", top: 44, width: 420, maxHeight: 340, overflow: "auto" }}
           >
             <div className="ga-row-between" style={{ padding: "8px 10px 6px" }}>
-              <span className="ga-overline">Funcionalidades</span>
+              <span className="ga-overline">{resultsHeading}</span>
               <span
                 className="ga-caption"
                 style={{ cursor: "pointer" }}
@@ -123,38 +116,38 @@ export function Topbar({ userName, userCargo }: TopbarProps) {
                 esc
               </span>
             </div>
-            {results.map((feature) => (
+            {results.map((contribuinte) => (
               <button
-                key={feature.key}
+                key={contribuinte.id}
                 type="button"
                 className="ga-menu-item ga-row"
-                onClick={() => goToFeature(feature.href)}
+                onClick={() => goToContribuinte(contribuinte.href)}
               >
                 <span
+                  className="ga-avatar ga-none"
                   style={{
-                    width: 26,
-                    height: 26,
-                    borderRadius: 7,
-                    border: "1px solid var(--ga-primary-200)",
+                    width: 30,
+                    height: 30,
+                    fontSize: 11,
                     background: "var(--ga-primary-50)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flex: "none",
+                    color: "var(--ga-primary-600)",
+                    border: "1px solid var(--ga-primary-200)",
                   }}
                 >
-                  <ArrowRight size={12} color="#2A45D4" strokeWidth={2.2} />
+                  {getInitials(contribuinte.nome)}
                 </span>
                 <span className="ga-stack-2 ga-grow" style={{ gap: 2, minWidth: 0 }}>
-                  <span className="ga-cell-primary">{feature.label}</span>
-                  <span className="ga-caption ga-truncate">{feature.path}</span>
+                  <span className="ga-cell-primary ga-truncate">{contribuinte.nome}</span>
+                  <span className="ga-cell-meta ga-truncate">{contribuinte.cnpjIe}</span>
                 </span>
-                <span className="ga-chip ga-mono ga-none">{feature.module}</span>
+                <span className={`ga-badge ga-none ga-badge-${contribuinte.badgeVariant}`}>
+                  {contribuinte.badgeLabel}
+                </span>
               </button>
             ))}
             {results.length === 0 && (
               <div className="ga-body-sm ga-muted" style={{ padding: "14px 10px 16px" }}>
-                Nenhuma funcionalidade encontrada.
+                Nenhum contribuinte encontrado para &ldquo;{query}&rdquo;.
               </div>
             )}
           </div>
