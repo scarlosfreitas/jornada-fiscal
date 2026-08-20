@@ -48,7 +48,7 @@ A barra lateral SHALL apresentar a marca do produto e a navegação principal do
 
 - Gestão de Alertas: Regras, Listas, Alertas
 - Ordens de Serviço: Minhas OS, Gestão de OS
-- Contribuinte: Histórico, Situação Cadastral, Recolhimentos, Entrega de Declarações, Valores Declarados, Emissão de Documentos
+- Contribuinte: Linha do Tempo, Situação Cadastral, Histórico, Recolhimentos, Entrega de Declarações, Valores Declarados, Emissão de Documentos
 - Relatórios: Empresas abertas, Reativações, Acumuladores de Crédito, Créditos do Apuração
 - Operador: Ciência, TIF, Auto de Embaraço, Auto Principal
 - Configuração: Usuários, Perfil de Acesso

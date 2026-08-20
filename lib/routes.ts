@@ -7,6 +7,7 @@ export const ROUTES = {
   alertasGerados: `${APP_BASE}/regras/alertas-gerados`,
   alertasListas: `${APP_BASE}/alertas/listas`,
   monitoramento: `${APP_BASE}/monitoramento`,
+  contribuinteLinhaDoTempo: `${APP_BASE}/contribuintes/linha-do-tempo`,
   contribuinteHistorico: `${APP_BASE}/contribuintes/historico`,
   contribuinteSituacaoCadastral: `${APP_BASE}/contribuintes/situacao-cadastral`,
   contribuinteRecolhimentos: `${APP_BASE}/contribuintes/recolhimentos`,
@@ -36,4 +37,21 @@ export function regraDetalhe(codigo: string) {
 
 export function contribuinteDetalhe(id: string) {
   return `${APP_BASE}/contribuintes/${id}`;
+}
+
+/** Abas da ficha do contribuinte, na ordem em que aparecem na barra de abas. */
+export const CONTRIBUINTE_TABS = [
+  "linha-do-tempo",
+  "situacao-cadastral",
+  "historico",
+  "recolhimentos",
+  "entrega-declaracoes",
+  "valores-declarados",
+  "emissao-documentos",
+] as const;
+
+export type ContribuinteTab = (typeof CONTRIBUINTE_TABS)[number];
+
+export function contribuinteTab(id: string, tab: ContribuinteTab) {
+  return `${APP_BASE}/contribuintes/${id}/${tab}`;
 }
