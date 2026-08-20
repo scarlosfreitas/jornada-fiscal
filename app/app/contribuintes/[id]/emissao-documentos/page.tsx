@@ -10,5 +10,5 @@ export default async function EmissaoDocumentosPage({
   params,
 }: PageProps<"/app/contribuintes/[id]/emissao-documentos">) {
   const { id } = await params;
-  return <EmissaoDocumentosTab tabela={getDocumentosEmitidos(id)} />;
+  return <EmissaoDocumentosTab tabela={await getDocumentosEmitidos(id)} />;
 }

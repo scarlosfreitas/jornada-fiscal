@@ -3,7 +3,8 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Plus, FileText, TriangleAlert } from "lucide-react";
-import { CATEGORIAS, type LinhaDoTempo } from "@/lib/mock/contribuinte-detalhe";
+import type { LinhaDoTempo } from "@/lib/mock/contribuinte-detalhe";
+import { CATEGORIAS } from "./categorias";
 import { TAB_META } from "./tab-meta";
 import { TabPageHead } from "./TabPageHead";
 import { SearchInput } from "./SearchInput";

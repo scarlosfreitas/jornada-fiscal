@@ -10,5 +10,6 @@ export default async function SituacaoCadastralPage({
   params,
 }: PageProps<"/app/contribuintes/[id]/situacao-cadastral">) {
   const { id } = await params;
-  return <SituacaoCadastralTab campos={getSituacaoCadastral(id)} ficha={getContribuinteFicha(id)} />;
+  const [campos, ficha] = await Promise.all([getSituacaoCadastral(id), getContribuinteFicha(id)]);
+  return <SituacaoCadastralTab campos={campos} ficha={ficha} />;
 }

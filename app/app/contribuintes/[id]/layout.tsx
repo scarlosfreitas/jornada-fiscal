@@ -7,7 +7,7 @@ export default async function ContribuinteLayout({
   params,
 }: LayoutProps<"/app/contribuintes/[id]">) {
   const { id } = await params;
-  const ficha = getContribuinteFicha(id);
+  const ficha = await getContribuinteFicha(id);
 
   return (
     <>

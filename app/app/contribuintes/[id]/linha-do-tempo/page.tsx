@@ -10,5 +10,5 @@ export default async function LinhaDoTempoPage({
   params,
 }: PageProps<"/app/contribuintes/[id]/linha-do-tempo">) {
   const { id } = await params;
-  return <LinhaDoTempoTab dados={getLinhaDoTempo(id)} />;
+  return <LinhaDoTempoTab dados={await getLinhaDoTempo(id)} />;
 }

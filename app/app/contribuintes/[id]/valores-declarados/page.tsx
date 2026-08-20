@@ -10,5 +10,5 @@ export default async function ValoresDeclaradosPage({
   params,
 }: PageProps<"/app/contribuintes/[id]/valores-declarados">) {
   const { id } = await params;
-  return <ValoresDeclaradosTab dados={getValoresDeclarados(id)} />;
+  return <ValoresDeclaradosTab dados={await getValoresDeclarados(id)} />;
 }

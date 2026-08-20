@@ -10,5 +10,5 @@ export default async function HistoricoPage({
   params,
 }: PageProps<"/app/contribuintes/[id]/historico">) {
   const { id } = await params;
-  return <HistoricoCadastralTab dados={getHistoricoCadastral(id)} />;
+  return <HistoricoCadastralTab dados={await getHistoricoCadastral(id)} />;
 }

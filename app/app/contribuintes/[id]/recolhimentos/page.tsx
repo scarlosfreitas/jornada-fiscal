@@ -10,5 +10,5 @@ export default async function RecolhimentosPage({
   params,
 }: PageProps<"/app/contribuintes/[id]/recolhimentos">) {
   const { id } = await params;
-  return <RecolhimentosTab tabela={getRecolhimentos(id)} />;
+  return <RecolhimentosTab tabela={await getRecolhimentos(id)} />;
 }

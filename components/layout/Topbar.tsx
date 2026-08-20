@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Search, Bell, ChevronDown, User, KeyRound, LogOut } from "lucide-react";
-import { getContribuintesRecentes, searchContribuintes } from "@/lib/mock/contribuintes";
+import type { ContribuinteResult } from "@/lib/mock/contribuintes";
+import { buscarContribuintes } from "@/app/app/actions";
 import { ROUTES } from "@/lib/routes";
 
 function getInitials(name?: string | null) {
@@ -17,11 +18,14 @@ function getInitials(name?: string | null) {
 interface TopbarProps {
   userName?: string | null;
   userCargo?: string | null;
+  /** Lista inicial, resolvida no servidor pelo layout. */
+  recentes: ContribuinteResult[];
 }
 
-export function Topbar({ userName, userCargo }: TopbarProps) {
+export function Topbar({ userName, userCargo, recentes }: TopbarProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [hits, setHits] = useState<ContribuinteResult[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -32,11 +36,26 @@ export function Topbar({ userName, userCargo }: TopbarProps) {
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const userContainerRef = useRef<HTMLDivElement>(null);
 
-  const results = useMemo(() => {
+  const buscando = query.trim() !== "";
+  const resultsHeading = buscando ? "Resultados" : "Contribuintes recentes";
+  /* Sem busca ativa, a lista é a do servidor; não precisa de estado. */
+  const results = buscando ? hits : recentes;
+
+  /* A consulta vai ao servidor (ver app/app/actions.ts), então é adiada enquanto a
+     pessoa digita. `pedido` descarta resposta que chega fora de ordem. */
+  const pedidoRef = useRef(0);
+  useEffect(() => {
     const q = query.trim();
-    return q ? searchContribuintes(q) : getContribuintesRecentes();
+    if (!q) return;
+
+    const pedido = ++pedidoRef.current;
+    const timer = setTimeout(async () => {
+      const encontrados = await buscarContribuintes(q);
+      if (pedido === pedidoRef.current) setHits(encontrados);
+    }, 250);
+
+    return () => clearTimeout(timer);
   }, [query]);
-  const resultsHeading = query.trim() ? "Resultados" : "Contribuintes recentes";
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {

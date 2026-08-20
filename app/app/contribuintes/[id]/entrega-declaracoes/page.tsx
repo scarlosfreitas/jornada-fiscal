@@ -10,5 +10,5 @@ export default async function EntregaDeclaracoesPage({
   params,
 }: PageProps<"/app/contribuintes/[id]/entrega-declaracoes">) {
   const { id } = await params;
-  return <EntregaDeclaracoesTab tabela={getDeclaracoes(id)} />;
+  return <EntregaDeclaracoesTab tabela={await getDeclaracoes(id)} />;
 }

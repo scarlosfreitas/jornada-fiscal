@@ -1,9 +1,16 @@
+import "server-only";
+
+import { lerFonteOu } from "@/lib/fontes";
+
 /**
- * Dados mock da ficha do contribuinte, transcritos de
- * references/design/Contribuinte.html. Não há persistência real ainda (sem
- * prisma/schema.prisma) — quando existir, as funções getX viram async e passam a
- * consultar o banco pelo `id`; a assinatura já é a de uma leitura real e os
- * componentes de apresentação não mudam.
+ * Ficha do contribuinte. Cada `getX` lê o payload correspondente de `FONTES_DIR`
+ * (ver lib/fontes/index.ts) e, quando o arquivo não existe, cai nos dados
+ * fictícios transcritos de references/design/Contribuinte.html que estão abaixo.
+ *
+ * O `import "server-only"` no topo é deliberado: os payloads reais trazem dado de
+ * contribuinte protegido por sigilo fiscal, e este módulo nunca pode ser bundlado
+ * para o navegador. Componentes de cliente devem importar daqui apenas `type`s —
+ * um `import` de valor a partir de um client component vira erro de build.
  *
  * Por ora as funções IGNORAM o `id`: a ficha é a mesma para qualquer contribuinte.
  *
@@ -47,9 +54,9 @@ const FICHA: ContribuinteFicha = {
   ],
 };
 
-export function getContribuinteFicha(id: string): ContribuinteFicha {
+export async function getContribuinteFicha(id: string): Promise<ContribuinteFicha> {
   void id;
-  return FICHA;
+  return lerFonteOu("contribuinte-ficha", FICHA);
 }
 
 /* --------------------------------------------------------------------------
@@ -58,19 +65,8 @@ export function getContribuinteFicha(id: string): ContribuinteFicha {
 
 export type EventoCategoria = "cadastro" | "fiscal" | "autuacao" | "prazo" | "contato";
 
-export interface CategoriaInfo {
-  label: string;
-  chipVariant: "" | "primary" | "info" | "warning";
-  dot: string;
-}
-
-export const CATEGORIAS: Record<EventoCategoria, CategoriaInfo> = {
-  cadastro: { label: "Cadastro", chipVariant: "primary", dot: "#2A45D4" },
-  fiscal: { label: "Fiscalização", chipVariant: "info", dot: "#1E63C9" },
-  autuacao: { label: "Autuação", chipVariant: "", dot: "#C2321F" },
-  prazo: { label: "Prazo", chipVariant: "warning", dot: "#B45309" },
-  contato: { label: "Contato", chipVariant: "", dot: "#12855C" },
-};
+/* O rótulo e a cor de cada categoria são apresentação e vivem em
+   components/contribuinte/categorias.ts — este módulo só carrega dado. */
 
 export interface EventoTimeline {
   date: string;
@@ -133,14 +129,14 @@ const FOTOS: Foto[] = [
 const TRANSCRICAO =
   "O responsável informou que a mudança de endereço do galpão anexo não foi comunicada por desconhecimento da obrigação acessória, comprometeu-se a regularizar o cadastro em 15 dias e a apresentar as notas de entrada das bobinas estocadas. Alegou dificuldade de acesso ao sistema com o certificado digital vencido.";
 
-export function getLinhaDoTempo(id: string): LinhaDoTempo {
+export async function getLinhaDoTempo(id: string): Promise<LinhaDoTempo> {
   void id;
-  return {
+  return lerFonteOu("linha-do-tempo", {
     eventos: EVENTOS,
     fotos: FOTOS,
     transcricao: TRANSCRICAO,
     transcricaoMeta: "Atendimento presencial · registrado por Ana Ribeiro em 01/09/2020",
-  };
+  });
 }
 
 /* --------------------------------------------------------------------------
@@ -221,9 +217,9 @@ const CAMPOS: CampoCadastral[] = [
   },
 ];
 
-export function getSituacaoCadastral(id: string): CampoCadastral[] {
+export async function getSituacaoCadastral(id: string): Promise<CampoCadastral[]> {
   void id;
-  return CAMPOS;
+  return lerFonteOu("situacao-cadastral", CAMPOS);
 }
 
 /* --------------------------------------------------------------------------
@@ -283,9 +279,12 @@ const HISTORICO_REGISTROS: HistoricoRegistro[] = [
   { cad_hist_ini: "03/08/2026 00:00:00", cad_hist_fim: "31/12/4000 00:00:00", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO T. FERREIRA LTDA", cad_nat_jur_nome: "SOCIEDADE EMPRESÁRIA LIMITADA" },
 ];
 
-export function getHistoricoCadastral(id: string): HistoricoCadastral {
+export async function getHistoricoCadastral(id: string): Promise<HistoricoCadastral> {
   void id;
-  return { colunas: HISTORICO_COLUNAS, registros: HISTORICO_REGISTROS };
+  return lerFonteOu("historico-cadastral", {
+    colunas: HISTORICO_COLUNAS,
+    registros: HISTORICO_REGISTROS,
+  });
 }
 
 /* --------------------------------------------------------------------------
@@ -334,19 +333,19 @@ const DOCUMENTOS: TabelaSimples = {
   ],
 };
 
-export function getRecolhimentos(id: string): TabelaSimples {
+export async function getRecolhimentos(id: string): Promise<TabelaSimples> {
   void id;
-  return RECOLHIMENTOS;
+  return lerFonteOu("recolhimentos", RECOLHIMENTOS);
 }
 
-export function getDeclaracoes(id: string): TabelaSimples {
+export async function getDeclaracoes(id: string): Promise<TabelaSimples> {
   void id;
-  return DECLARACOES;
+  return lerFonteOu("declaracoes", DECLARACOES);
 }
 
-export function getDocumentosEmitidos(id: string): TabelaSimples {
+export async function getDocumentosEmitidos(id: string): Promise<TabelaSimples> {
   void id;
-  return DOCUMENTOS;
+  return lerFonteOu("documentos-emitidos", DOCUMENTOS);
 }
 
 /* --------------------------------------------------------------------------
@@ -389,12 +388,12 @@ const RUBRICAS: Rubrica[] = [
 
 const PERIODOS = ["ago/26", "jul/26", "jun/26", "mai/26", "abr/26", "mar/26", "fev/26", "jan/26", "dez/25", "nov/25", "out/25", "set/25", "ago/25"];
 
-export function getValoresDeclarados(id: string): ValoresDeclarados {
+export async function getValoresDeclarados(id: string): Promise<ValoresDeclarados> {
   void id;
-  return {
+  return lerFonteOu("valores-declarados", {
     rubricas: RUBRICAS,
     periodos: PERIODOS,
     colunasPorIntervalo: { "12m": 13, ano: 8, esp: 12 },
     valorCelula: "10.000,00",
-  };
+  });
 }

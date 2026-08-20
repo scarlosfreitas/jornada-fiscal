@@ -1,11 +1,17 @@
-/**
- * Dados mock de contribuintes para a busca da barra superior, extraídos de
- * references/design/Dashboard.html. Não há persistência real ainda (sem
- * prisma/schema.prisma); quando existir, searchContribuintes/getContribuintesRecentes
- * viram consultas reais e os componentes de apresentação não mudam.
- */
+import "server-only";
 
+import { lerFonteOu } from "@/lib/fontes";
 import { contribuinteDetalhe } from "@/lib/routes";
+
+/**
+ * Contribuintes para a busca da barra superior. Lê `contribuintes.json` de
+ * `FONTES_DIR` e cai nos dados fictícios abaixo (extraídos de
+ * references/design/Dashboard.html) quando o arquivo não existe.
+ *
+ * `import "server-only"`: a busca roda no servidor (app/app/actions.ts) justamente
+ * para que a base não vá inteira para o navegador. Client components importam
+ * daqui apenas `type`s.
+ */
 
 export type SituacaoCadastral = "ativo" | "monitorado" | "suspenso" | "baixado";
 
@@ -62,14 +68,24 @@ function toResult(c: Contribuinte): ContribuinteResult {
   };
 }
 
-export function getContribuintesRecentes(): ContribuinteResult[] {
-  return RECENTES_IDS.map((id) => CONTRIBUINTES.find((c) => c.id === id)!).map(toResult);
+async function todos(): Promise<Contribuinte[]> {
+  return lerFonteOu("contribuintes", CONTRIBUINTES);
 }
 
-export function searchContribuintes(query: string): ContribuinteResult[] {
+export async function getContribuintesRecentes(): Promise<ContribuinteResult[]> {
+  const contribuintes = await todos();
+  /* Os "recentes" do protótipo são uma lista fixa de ids; um payload real pode não
+     trazê-los, então o que faltar simplesmente não aparece. */
+  return RECENTES_IDS.map((id) => contribuintes.find((c) => c.id === id))
+    .filter((c): c is Contribuinte => c !== undefined)
+    .map(toResult);
+}
+
+export async function searchContribuintes(query: string): Promise<ContribuinteResult[]> {
   const q = query.trim().toLowerCase();
   if (!q) return getContribuintesRecentes();
-  return CONTRIBUINTES.filter((c) =>
-    `${c.nome} ${c.cnpj} ${c.socio} ${c.contador}`.toLowerCase().includes(q),
-  ).map(toResult);
+  const contribuintes = await todos();
+  return contribuintes
+    .filter((c) => `${c.nome} ${c.cnpj} ${c.socio} ${c.contador}`.toLowerCase().includes(q))
+    .map(toResult);
 }
