@@ -5,25 +5,74 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, ChevronDown, Menu, Search } from "lucide-react";
 import { LogoIcon } from "@/components/icons/LogoIcon";
-import { APP_FEATURES, NAV_ITEMS } from "./nav-data";
-import { ROUTES } from "@/lib/routes";
+import { APP_FEATURES, NAV_ITEMS, type NavChild, type NavItem } from "./nav-data";
+import { ROUTES, CONTRIBUINTE_TABS, contribuinteTab, type ContribuinteTab } from "@/lib/routes";
+
+const CONTRIB_KEY_TO_TAB: Record<string, ContribuinteTab> = {
+  linha_tempo: "linha-do-tempo",
+  sit: "situacao-cadastral",
+  hist: "historico",
+  rec: "recolhimentos",
+  dec: "entrega-declaracoes",
+  val: "valores-declarados",
+  doc: "emissao-documentos",
+};
 
 /**
  * O índice da aplicação (`/app`) casa só por igualdade — um `startsWith`
  * deixaria "Painel" aceso em qualquer outra tela. Os demais itens casam por
  * prefixo, para que subpáginas de uma tela mantenham o item pai destacado.
+ * `matchExtra` cobre rotas de detalhe fora do prefixo da listagem (ex.:
+ * `/app/regras/{codigo}` para o item "Regras").
  */
-function isRouteActive(pathname: string, href: string): boolean {
+function isRouteActive(pathname: string, href: string, matchExtra?: (pathname: string) => boolean): boolean {
   if (href === ROUTES.painel) {
     return pathname === href;
   }
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === href || pathname.startsWith(`${href}/`) || !!matchExtra?.(pathname);
 }
 
-function findActiveParentKey(pathname: string): string | null {
-  const parent = NAV_ITEMS.find((item) =>
-    item.children?.some((child) => isRouteActive(pathname, child.href)),
-  );
+function isChildActive(pathname: string, child: NavChild): boolean {
+  return isRouteActive(pathname, child.href, child.matchExtra);
+}
+
+function extractContribuinteId(pathname: string): string | null {
+  const match = pathname.match(/^\/app\/contribuintes\/([^/]+)/);
+  if (!match) return null;
+  const candidate = match[1];
+  if ((CONTRIBUINTE_TABS as readonly string[]).includes(candidate)) {
+    return null;
+  }
+  return candidate;
+}
+
+function getNavItems(pathname: string): NavItem[] {
+  const contribuinteId = extractContribuinteId(pathname);
+  if (!contribuinteId) {
+    return NAV_ITEMS;
+  }
+
+  return NAV_ITEMS.map((item) => {
+    if (item.key !== "contrib" || !item.children) {
+      return item;
+    }
+
+    return {
+      ...item,
+      children: item.children.map((child) => {
+        const tab = CONTRIB_KEY_TO_TAB[child.key];
+        if (!tab) return child;
+        return {
+          ...child,
+          href: contribuinteTab(contribuinteId, tab),
+        };
+      }),
+    };
+  });
+}
+
+function findActiveParentKey(pathname: string, items: NavItem[]): string | null {
+  const parent = items.find((item) => item.children?.some((child) => isChildActive(pathname, child)));
   return parent?.key ?? null;
 }
 
@@ -34,7 +83,8 @@ export function Sidebar() {
   // Overrides explícitos do usuário para grupos; grupos sem override seguem
   // o padrão (aberto quando a rota atual corresponde a um subitem).
   const [groupOverrides, setGroupOverrides] = useState<Record<string, boolean>>({});
-  const activeParentKey = findActiveParentKey(pathname);
+  const navItems = useMemo(() => getNavItems(pathname), [pathname]);
+  const activeParentKey = findActiveParentKey(pathname, navItems);
 
   const [featQuery, setFeatQuery] = useState("");
   const [featSearchOpen, setFeatSearchOpen] = useState(false);
@@ -92,7 +142,7 @@ export function Sidebar() {
       </div>
 
       <nav className="ga-sidebar-nav">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const Icon = item.icon;
           const hasChildren = !!item.children;
           const isOpen = isGroupOpen(item.key);
@@ -135,7 +185,7 @@ export function Sidebar() {
                       key={child.key}
                       href={child.href}
                       className="ga-nav-subitem"
-                      aria-current={isRouteActive(pathname, child.href) ? "page" : undefined}
+                      aria-current={isChildActive(pathname, child) ? "page" : undefined}
                     >
                       {child.label}
                     </Link>

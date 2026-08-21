@@ -44,14 +44,29 @@ A aplicação SHALL se identificar como produto "Gertor de Alertas" e SHALL decl
 
 ### Requirement: Navegação principal na barra lateral
 
-A barra lateral SHALL apresentar a marca do produto e a navegação principal do sistema. A navegação SHALL conter, nesta ordem, os grupos Painel, Gestão de Alertas, Ordens de Serviço, Contribuinte, Relatórios, Operador e Configuração, cada um com ícone e rótulo. Painel SHALL ser um item sem subitens; os demais grupos SHALL ter subitens:
+A barra lateral SHALL apresentar a marca do produto e a navegação principal do sistema. A navegação SHALL conter, nesta ordem, os grupos Painel, Gestão de Alertas, Ontologia FtM, Ordens de Serviço, Contribuinte, Relatórios, Operador e Configuração, cada um com ícone e rótulo. Painel SHALL ser um item sem subitens; os demais grupos SHALL ter subitens:
 
 - Gestão de Alertas: Regras, Listas, Alertas
+- Ontologia FtM: Entidades, Propriedades, Tipos de Ação
 - Ordens de Serviço: Minhas OS, Gestão de OS
-- Contribuinte: Histórico, Situação Cadastral, Recolhimentos, Entrega de Declarações, Valores Declarados, Emissão de Documentos
+- Contribuinte: Linha do Tempo, Situação Cadastral, Histórico, Recolhimentos, Entrega de Declarações, Valores Declarados, Emissão de Documentos
 - Relatórios: Empresas abertas, Reativações, Acumuladores de Crédito, Créditos do Apuração
 - Operador: Ciência, TIF, Auto de Embaraço, Auto Principal
 - Configuração: Usuários, Perfil de Acesso
+
+Os subitens do grupo Contribuinte SHALL gerar links dinâmicos que incluem o `id_contribuinte` do contribuinte atualmente aberto. Os caminhos SHALL ser:
+
+| Label | Rota |
+| --- | --- |
+| Linha do Tempo | `/app/contribuintes/[id]` ou `/app/contribuintes/[id]/linha-do-tempo` |
+| Situação Cadastral | `/app/contribuintes/[id]/situacao-cadastral` |
+| Histórico | `/app/contribuintes/[id]/historico` |
+| Recolhimentos | `/app/contribuintes/[id]/recolhimentos` |
+| Entrega de Declarações | `/app/contribuintes/[id]/entrega-declaracoes` |
+| Valores Declarados | `/app/contribuintes/[id]/valores-declarados` |
+| Emissão de Documentos | `/app/contribuintes/[id]/emissao-documentos` |
+
+Quando nenhum contribuinte estiver aberto (navegação fora da ficha), os subitens do grupo Contribuinte SHALL manter os links estáticos existentes (sem `[id]`).
 
 Itens com subitens SHALL exibir um indicador de expansão; itens com contagem pendente SHALL exibir essa contagem ao lado do rótulo.
 
@@ -75,10 +90,29 @@ Itens com subitens SHALL exibir um indicador de expansão; itens com contagem pe
 - **WHEN** a pessoa usuária aciona um subitem
 - **THEN** o sistema navega para a tela correspondente
 
+#### Scenario: Links do Contribuinte com ficha aberta
+
+- **WHEN** a pessoa usuária está na ficha de um contribuinte com `id` igual a "123"
+- **THEN** os subitens do grupo Contribuinte na sidebar geram links como `/app/contribuintes/123/situacao-cadastral`, `/app/contribuintes/123/historico`, etc.
+
+#### Scenario: Links do Contribuinte sem ficha aberta
+
+- **WHEN** a pessoa usuária está fora da ficha de um contribuinte
+- **THEN** os subitens do grupo Contribuinte mantêm os links estáticos existentes
+
 #### Scenario: Destaque do item correspondente à tela atual
 
 - **WHEN** uma tela do produto é exibida
 - **THEN** o item de navegação correspondente àquela tela aparece destacado como ativo, e, quando a tela corresponde a um subitem, o item pai aparece expandido
+
+### Requirement: Telas da Ontologia FtM na busca de funcionalidade
+
+A busca de funcionalidade da barra lateral SHALL incluir as telas Entidades, Propriedades e Tipos de Ação entre as funcionalidades pesquisáveis, cada uma com seu caminho no sistema sob "Ontologia FtM".
+
+#### Scenario: Encontrar uma tela da Ontologia FtM pela busca
+
+- **WHEN** a pessoa usuária digita um texto que corresponde ao nome ou ao caminho de Entidades, Propriedades ou Tipos de Ação no campo "Busca funcionalidade"
+- **THEN** a funcionalidade correspondente é listada no dropdown com seu caminho sob "Ontologia FtM", e acioná-la navega para a tela
 
 ### Requirement: Recolhimento da barra lateral
 
@@ -135,22 +169,27 @@ A barra lateral SHALL oferecer, no seu rodapé, acima do controle "Recolher menu
 
 ### Requirement: Busca de contribuinte na barra superior
 
-A barra superior SHALL oferecer um campo de busca de contribuintes, com texto de apoio indicando que a busca aceita CNPJ, razão social, sócio ou contador. Enquanto o campo estiver em foco, um dropdown SHALL ser exibido:
+A barra superior SHALL oferecer um campo de busca de contribuintes, com texto de apoio indicando que a busca aceita CNPJ, CPF, inscrição estadual, razão social ou nome fantasia. Enquanto o campo estiver em foco, um dropdown SHALL ser exibido:
 
-- Sem texto digitado, o dropdown SHALL listar os contribuintes recentes.
-- Com texto digitado, o dropdown SHALL listar os contribuintes cujo CNPJ, razão social, sócio ou contador correspondem ao texto.
+- Sem texto digitado, o dropdown SHALL listar os contribuintes que a própria pessoa usuária abriu mais recentemente, sob o título "Contribuintes recentes". Quando ela ainda não abriu nenhuma ficha, o dropdown SHALL orientar que se digite CNPJ, CPF, inscrição estadual, razão social ou nome fantasia.
+- Com texto digitado, o dropdown SHALL listar, sob o título "Resultados", os contribuintes correspondentes ao texto, conforme a consulta de entidade.
 
-Cada item do dropdown SHALL exibir a razão social do contribuinte como título, "CNPJ · IE" como subtítulo, e um badge com a situação cadastral do contribuinte. Acionar um item SHALL navegar para a tela do contribuinte correspondente.
+Cada item do dropdown SHALL exibir o nome de exibição do contribuinte como título, a linha de identificação "CNPJ · IE" como subtítulo, e um badge com a situação cadastral do contribuinte. Acionar um item SHALL navegar para a ficha do contribuinte correspondente.
 
 #### Scenario: Abrir a busca sem texto
 
-- **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada
-- **THEN** o dropdown exibe a lista de contribuintes recentes
+- **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada e já abriu fichas de contribuinte antes
+- **THEN** o dropdown exibe, sob o título "Contribuintes recentes", as fichas que ela abriu mais recentemente
+
+#### Scenario: Abrir a busca sem texto e sem histórico
+
+- **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada e ainda não abriu nenhuma ficha
+- **THEN** o dropdown orienta que se digite CNPJ, CPF, inscrição estadual, razão social ou nome fantasia
 
 #### Scenario: Filtrar contribuintes por texto
 
-- **WHEN** a pessoa usuária digita um CNPJ, razão social, nome de sócio ou de contador no campo de busca
-- **THEN** o dropdown passa a listar somente os contribuintes cujo CNPJ, razão social, sócio ou contador correspondem ao texto digitado
+- **WHEN** a pessoa usuária digita um CNPJ, CPF, inscrição estadual, razão social ou nome fantasia no campo de busca
+- **THEN** o dropdown passa a listar, sob o título "Resultados", os contribuintes correspondentes ao texto digitado
 
 #### Scenario: Nenhum contribuinte correspondente
 
@@ -160,12 +199,12 @@ Cada item do dropdown SHALL exibir a razão social do contribuinte como título,
 #### Scenario: Conteúdo de cada item do dropdown
 
 - **WHEN** o dropdown de busca de contribuinte exibe um resultado
-- **THEN** o item mostra a razão social como título, "CNPJ · IE" como subtítulo e um badge com a situação cadastral do contribuinte
+- **THEN** o item mostra o nome de exibição como título, a linha "CNPJ · IE" como subtítulo e um badge com a situação cadastral do contribuinte
 
 #### Scenario: Navegar por um resultado
 
 - **WHEN** a pessoa usuária aciona um item do dropdown de busca de contribuinte
-- **THEN** o sistema navega para a tela do contribuinte correspondente e o dropdown é fechado
+- **THEN** o sistema navega para a ficha do contribuinte correspondente e o dropdown é fechado
 
 #### Scenario: Fechar a busca
 

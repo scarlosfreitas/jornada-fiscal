@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getDashboardData, type Period } from "@/lib/mock/dashboard";
+import type { DashboardData, Period } from "@/lib/mock/dashboard";
 import { ROUTES } from "@/lib/routes";
 import { PageHead } from "./PageHead";
 import { KpiGrid } from "./KpiGrid";
@@ -18,14 +18,29 @@ const LEGEND = [
   { label: "Intervenção", color: "#8A91A3" },
 ];
 
-export function PainelOperacional({ children }: { children: ReactNode }) {
+interface PainelOperacionalProps {
+  period: Period;
+  data: DashboardData;
+  children: ReactNode;
+}
+
+/**
+ * O período vive na URL (`?periodo=`) e os dados são resolvidos no servidor por
+ * app/app/page.tsx. Antes este componente chamava getDashboardData no cliente, o
+ * que levava a base inteira para o navegador — inaceitável quando a origem passa a
+ * ser `fontes/`, com dado real. De quebra, o período agora é compartilhável e
+ * sobrevive ao recarregamento.
+ */
+export function PainelOperacional({ period, data, children }: PainelOperacionalProps) {
   const router = useRouter();
-  const [period, setPeriod] = useState<Period>("7d");
-  const data = getDashboardData(period);
 
   return (
     <>
-      <PageHead period={period} onPeriodChange={setPeriod} onRefresh={() => router.refresh()} />
+      <PageHead
+        period={period}
+        onPeriodChange={(p) => router.push(`${ROUTES.painel}?periodo=${p}`)}
+        onRefresh={() => router.refresh()}
+      />
 
       <KpiGrid kpis={data.kpis} />
 

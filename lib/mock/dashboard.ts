@@ -5,7 +5,16 @@
  * período já é a de uma leitura real, e os componentes de apresentação não mudam.
  */
 
-export type Period = "7d" | "30d" | "90d";
+export const PERIODS = ["7d", "30d", "90d"] as const;
+
+export type Period = (typeof PERIODS)[number];
+
+/** Lê o período do parâmetro de consulta, caindo no padrão quando ausente ou inválido. */
+export function parsePeriod(value: string | string[] | undefined): Period {
+  return typeof value === "string" && (PERIODS as readonly string[]).includes(value)
+    ? (value as Period)
+    : "7d";
+}
 
 export type KpiVariant = "primary" | "warning" | "danger" | "success";
 

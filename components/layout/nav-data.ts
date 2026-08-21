@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Bell,
+  Network,
   Users,
   ClipboardList,
   BarChart3,
@@ -8,12 +9,14 @@ import {
   Settings,
   type LucideIcon,
 } from "lucide-react";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES, isListaDetalheRoute, isRegraDetalheRoute } from "@/lib/routes";
 
 export interface NavChild {
   key: string;
   label: string;
   href: string;
+  /** Casamento extra de rota, além da igualdade/prefixo padrão (ex.: telas de detalhe fora do prefixo da listagem). */
+  matchExtra?: (pathname: string) => boolean;
 }
 
 export interface NavItem {
@@ -36,9 +39,20 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Bell,
     badge: 12,
     children: [
-      { key: "regras", label: "Regras", href: ROUTES.regrasDeAlerta },
-      { key: "listas", label: "Listas", href: ROUTES.alertasListas },
+      { key: "regras", label: "Regras", href: ROUTES.regrasDeAlerta, matchExtra: isRegraDetalheRoute },
+      { key: "listas", label: "Listas", href: ROUTES.alertasListas, matchExtra: isListaDetalheRoute },
       { key: "alertas_lista", label: "Alertas", href: ROUTES.alertasGerados },
+    ],
+  },
+  {
+    key: "ontologia",
+    label: "Ontologia FtM",
+    href: ROUTES.ftmEntidades,
+    icon: Network,
+    children: [
+      { key: "ftm_entidades", label: "Entidades", href: ROUTES.ftmEntidades },
+      { key: "ftm_propriedades", label: "Propriedades", href: ROUTES.ftmPropriedades },
+      { key: "ftm_acoes", label: "Tipos de Ação", href: ROUTES.ftmTiposAcao },
     ],
   },
   {
@@ -55,11 +69,12 @@ export const NAV_ITEMS: NavItem[] = [
   {
     key: "contrib",
     label: "Contribuinte",
-    href: ROUTES.contribuinteHistorico,
+    href: ROUTES.contribuinteLinhaDoTempo,
     icon: Users,
     children: [
-      { key: "hist", label: "Histórico", href: ROUTES.contribuinteHistorico },
+      { key: "linha_tempo", label: "Linha do Tempo", href: ROUTES.contribuinteLinhaDoTempo },
       { key: "sit", label: "Situação Cadastral", href: ROUTES.contribuinteSituacaoCadastral },
+      { key: "hist", label: "Histórico", href: ROUTES.contribuinteHistorico },
       { key: "rec", label: "Recolhimentos", href: ROUTES.contribuinteRecolhimentos },
       { key: "dec", label: "Entrega de Declarações", href: ROUTES.contribuinteEntregaDeclaracoes },
       { key: "val", label: "Valores Declarados", href: ROUTES.contribuinteValoresDeclarados },
@@ -116,10 +131,14 @@ export const APP_FEATURES: AppFeature[] = [
   { key: "regras", label: "Regras", path: "Gestão de Alertas / Regras", module: "alertas", href: ROUTES.regrasDeAlerta },
   { key: "listas", label: "Listas", path: "Gestão de Alertas / Listas", module: "alertas", href: ROUTES.alertasListas },
   { key: "alertas", label: "Alertas", path: "Gestão de Alertas / Alertas", module: "alertas", href: ROUTES.alertasGerados },
+  { key: "ftm_entidades", label: "Entidades", path: "Ontologia FtM / Entidades", module: "ontologia", href: ROUTES.ftmEntidades },
+  { key: "ftm_propriedades", label: "Propriedades", path: "Ontologia FtM / Propriedades", module: "ontologia", href: ROUTES.ftmPropriedades },
+  { key: "ftm_acoes", label: "Tipos de Ação", path: "Ontologia FtM / Tipos de Ação", module: "ontologia", href: ROUTES.ftmTiposAcao },
   { key: "minhas_os", label: "Minhas OS", path: "Ordens de Serviço / Minhas OS", module: "os", href: ROUTES.ordensDeServicoMinhas },
   { key: "gestao_os", label: "Gestão de OS", path: "Ordens de Serviço / Gestão de OS", module: "os", href: ROUTES.ordensDeServicoGestao },
-  { key: "hist", label: "Histórico", path: "Contribuinte / Histórico", module: "contribuinte", href: ROUTES.contribuinteHistorico },
+  { key: "linha_tempo", label: "Linha do Tempo", path: "Contribuinte / Linha do Tempo", module: "contribuinte", href: ROUTES.contribuinteLinhaDoTempo },
   { key: "sit", label: "Situação Cadastral", path: "Contribuinte / Situação Cadastral", module: "contribuinte", href: ROUTES.contribuinteSituacaoCadastral },
+  { key: "hist", label: "Histórico", path: "Contribuinte / Histórico", module: "contribuinte", href: ROUTES.contribuinteHistorico },
   { key: "rec", label: "Recolhimentos", path: "Contribuinte / Recolhimentos", module: "contribuinte", href: ROUTES.contribuinteRecolhimentos },
   { key: "dec", label: "Entrega de Declarações", path: "Contribuinte / Entrega de Declarações", module: "contribuinte", href: ROUTES.contribuinteEntregaDeclaracoes },
   { key: "val", label: "Valores Declarados", path: "Contribuinte / Valores Declarados", module: "contribuinte", href: ROUTES.contribuinteValoresDeclarados },

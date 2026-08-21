@@ -60,4 +60,14 @@ settings.local.json
 # Worktrees adicionais (checkout de outros branches dentro da própria árvore)
 /.worktrees/
 
+# ── Fontes de dados ─────────────────────────────────────────
+# Payloads da API (SATE) com dado real de contribuinte. Este repositório é
+# PÚBLICO e esses arquivos são protegidos por sigilo fiscal (CTN art. 198):
+# nada aqui dentro pode ser versionado. Só o README escapa.
+# Ver references/api/README.md.
+/fontes/*
+!/fontes/README.md
+
 # ── Fim ─────────────────────────────────────────────────────/.claude/worktrees/
+
+.obsidian
