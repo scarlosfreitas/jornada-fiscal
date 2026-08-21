@@ -79,6 +79,10 @@ model Usuario {
   usuarioPerfilCriados              UsuarioPerfil[]         @relation("UsuarioPerfil_criadoPor")
   usuarioPerfilAtualizados          UsuarioPerfil[]         @relation("UsuarioPerfil_atualizadoPor")
 
+  contribuintesAcessados             ContribuinteAcesso[]    @relation("ContribuinteAcesso_usuario")
+  contribuinteAcessoCriados          ContribuinteAcesso[]    @relation("ContribuinteAcesso_criadoPor")
+  contribuinteAcessoAtualizados      ContribuinteAcesso[]    @relation("ContribuinteAcesso_atualizadoPor")
+
   @@id([id])
   @@map("usuario")
 }
@@ -341,4 +345,28 @@ model UsuarioPerfil {
 
   @@id([usuarioId, perfilId, vigenciaInicio])
   @@map("usuario_perfil")
+}
+
+// contribuinte_acesso registra, por usuário, a última abertura da ficha de
+// cada entidade (`cad_id` de `analytics.consulta_entidade`, tabela somente
+// leitura fora do controle do Prisma — por isso sem FK). Chave composta
+// (usr_id, cad_id) garante que a mesma entidade nunca duplica entre os
+// recentes; ver openspec/changes/consulta-entidade/design.md, decisão 5.
+model ContribuinteAcesso {
+  usuarioId     String    @map("usr_id") @db.Uuid
+  cadId         BigInt    @map("cad_id")
+  acessadoEm    DateTime  @map("acessado_em") @db.Timestamptz()
+  criadoPor     String    @map("criado_por") @db.Uuid
+  atualizadoPor String    @map("atualizado_por") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+  deletadoEm    DateTime? @map("deletado_em")
+
+  usuario              Usuario @relation("ContribuinteAcesso_usuario", fields: [usuarioId], references: [id])
+  criadoPorUsuario     Usuario @relation("ContribuinteAcesso_criadoPor", fields: [criadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  atualizadoPorUsuario Usuario @relation("ContribuinteAcesso_atualizadoPor", fields: [atualizadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([usuarioId, cadId])
+  @@index([usuarioId, acessadoEm(sort: Desc)])
+  @@map("contribuinte_acesso")
 }

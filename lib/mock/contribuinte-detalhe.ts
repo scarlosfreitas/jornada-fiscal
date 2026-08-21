@@ -14,11 +14,9 @@ import { lerFonteOu } from "@/lib/fontes";
  *
  * Por ora as funções IGNORAM o `id`: a ficha é a mesma para qualquer contribuinte.
  *
- * Inconsistências herdadas do protótipo, transcritas como estão:
- * - o Histórico cadastral (getHistoricoCadastral) traz um contribuinte diferente
- *   do resto da ficha ("EDINALDO TAVARES FERREIRA", e não "Metalúrgica Andrade S/A");
- * - a IE da identidade aqui (07.302.118-4) difere da que lib/mock/contribuintes.ts
- *   registra para o mesmo c1 (110.482.331).
+ * Inconsistência herdada do protótipo, transcrita como está: o Histórico
+ * cadastral (getHistoricoCadastral) traz um contribuinte diferente do resto
+ * da ficha ("EDINALDO TAVARES FERREIRA", e não "Metalúrgica Andrade S/A").
  */
 
 export type BadgeVariant = "success" | "warning" | "danger" | "neutral";

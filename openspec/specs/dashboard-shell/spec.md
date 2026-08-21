@@ -150,22 +150,27 @@ A barra lateral SHALL oferecer, no seu rodapé, acima do controle "Recolher menu
 
 ### Requirement: Busca de contribuinte na barra superior
 
-A barra superior SHALL oferecer um campo de busca de contribuintes, com texto de apoio indicando que a busca aceita CNPJ, razão social, sócio ou contador. Enquanto o campo estiver em foco, um dropdown SHALL ser exibido:
+A barra superior SHALL oferecer um campo de busca de contribuintes, com texto de apoio indicando que a busca aceita CNPJ, CPF, inscrição estadual, razão social ou nome fantasia. Enquanto o campo estiver em foco, um dropdown SHALL ser exibido:
 
-- Sem texto digitado, o dropdown SHALL listar os contribuintes recentes.
-- Com texto digitado, o dropdown SHALL listar os contribuintes cujo CNPJ, razão social, sócio ou contador correspondem ao texto.
+- Sem texto digitado, o dropdown SHALL listar os contribuintes que a própria pessoa usuária abriu mais recentemente, sob o título "Contribuintes recentes". Quando ela ainda não abriu nenhuma ficha, o dropdown SHALL orientar que se digite CNPJ, CPF, inscrição estadual, razão social ou nome fantasia.
+- Com texto digitado, o dropdown SHALL listar, sob o título "Resultados", os contribuintes correspondentes ao texto, conforme a consulta de entidade.
 
-Cada item do dropdown SHALL exibir a razão social do contribuinte como título, "CNPJ · IE" como subtítulo, e um badge com a situação cadastral do contribuinte. Acionar um item SHALL navegar para a tela do contribuinte correspondente.
+Cada item do dropdown SHALL exibir o nome de exibição do contribuinte como título, a linha de identificação "CNPJ · IE" como subtítulo, e um badge com a situação cadastral do contribuinte. Acionar um item SHALL navegar para a ficha do contribuinte correspondente.
 
 #### Scenario: Abrir a busca sem texto
 
-- **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada
-- **THEN** o dropdown exibe a lista de contribuintes recentes
+- **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada e já abriu fichas de contribuinte antes
+- **THEN** o dropdown exibe, sob o título "Contribuintes recentes", as fichas que ela abriu mais recentemente
+
+#### Scenario: Abrir a busca sem texto e sem histórico
+
+- **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada e ainda não abriu nenhuma ficha
+- **THEN** o dropdown orienta que se digite CNPJ, CPF, inscrição estadual, razão social ou nome fantasia
 
 #### Scenario: Filtrar contribuintes por texto
 
-- **WHEN** a pessoa usuária digita um CNPJ, razão social, nome de sócio ou de contador no campo de busca
-- **THEN** o dropdown passa a listar somente os contribuintes cujo CNPJ, razão social, sócio ou contador correspondem ao texto digitado
+- **WHEN** a pessoa usuária digita um CNPJ, CPF, inscrição estadual, razão social ou nome fantasia no campo de busca
+- **THEN** o dropdown passa a listar, sob o título "Resultados", os contribuintes correspondentes ao texto digitado
 
 #### Scenario: Nenhum contribuinte correspondente
 
@@ -175,12 +180,12 @@ Cada item do dropdown SHALL exibir a razão social do contribuinte como título,
 #### Scenario: Conteúdo de cada item do dropdown
 
 - **WHEN** o dropdown de busca de contribuinte exibe um resultado
-- **THEN** o item mostra a razão social como título, "CNPJ · IE" como subtítulo e um badge com a situação cadastral do contribuinte
+- **THEN** o item mostra o nome de exibição como título, a linha "CNPJ · IE" como subtítulo e um badge com a situação cadastral do contribuinte
 
 #### Scenario: Navegar por um resultado
 
 - **WHEN** a pessoa usuária aciona um item do dropdown de busca de contribuinte
-- **THEN** o sistema navega para a tela do contribuinte correspondente e o dropdown é fechado
+- **THEN** o sistema navega para a ficha do contribuinte correspondente e o dropdown é fechado
 
 #### Scenario: Fechar a busca
 

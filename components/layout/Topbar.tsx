@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Search, Bell, ChevronDown, User, KeyRound, LogOut } from "lucide-react";
-import type { ContribuinteResult } from "@/lib/mock/contribuintes";
+import type { ContribuinteResult } from "@/lib/consulta-entidade";
 import { buscarContribuintes } from "@/app/app/actions";
 import { ROUTES } from "@/lib/routes";
 
@@ -117,7 +117,7 @@ export function Topbar({ userName, userCargo, recentes }: TopbarProps) {
               setSearchOpen(true);
             }}
             onFocus={() => setSearchOpen(true)}
-            placeholder="Buscar contribuinte — ex. CNPJ, razão social, sócio, contador"
+            placeholder="Buscar contribuinte — CNPJ, CPF, IE, razão social ou nome fantasia"
           />
         </div>
         {searchOpen && (
@@ -164,9 +164,14 @@ export function Topbar({ userName, userCargo, recentes }: TopbarProps) {
                 </span>
               </button>
             ))}
-            {results.length === 0 && (
+            {results.length === 0 && buscando && (
               <div className="ga-body-sm ga-muted" style={{ padding: "14px 10px 16px" }}>
                 Nenhum contribuinte encontrado para &ldquo;{query}&rdquo;.
+              </div>
+            )}
+            {results.length === 0 && !buscando && (
+              <div className="ga-body-sm ga-muted" style={{ padding: "14px 10px 16px" }}>
+                Digite CNPJ, CPF, inscrição estadual, razão social ou nome fantasia para buscar.
               </div>
             )}
           </div>
