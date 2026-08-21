@@ -5,25 +5,29 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, ChevronDown, Menu, Search } from "lucide-react";
 import { LogoIcon } from "@/components/icons/LogoIcon";
-import { APP_FEATURES, NAV_ITEMS } from "./nav-data";
+import { APP_FEATURES, NAV_ITEMS, type NavChild } from "./nav-data";
 import { ROUTES } from "@/lib/routes";
 
 /**
  * O índice da aplicação (`/app`) casa só por igualdade — um `startsWith`
  * deixaria "Painel" aceso em qualquer outra tela. Os demais itens casam por
  * prefixo, para que subpáginas de uma tela mantenham o item pai destacado.
+ * `matchExtra` cobre rotas de detalhe fora do prefixo da listagem (ex.:
+ * `/app/regras/{codigo}` para o item "Regras").
  */
-function isRouteActive(pathname: string, href: string): boolean {
+function isRouteActive(pathname: string, href: string, matchExtra?: (pathname: string) => boolean): boolean {
   if (href === ROUTES.painel) {
     return pathname === href;
   }
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === href || pathname.startsWith(`${href}/`) || !!matchExtra?.(pathname);
+}
+
+function isChildActive(pathname: string, child: NavChild): boolean {
+  return isRouteActive(pathname, child.href, child.matchExtra);
 }
 
 function findActiveParentKey(pathname: string): string | null {
-  const parent = NAV_ITEMS.find((item) =>
-    item.children?.some((child) => isRouteActive(pathname, child.href)),
-  );
+  const parent = NAV_ITEMS.find((item) => item.children?.some((child) => isChildActive(pathname, child)));
   return parent?.key ?? null;
 }
 
@@ -135,7 +139,7 @@ export function Sidebar() {
                       key={child.key}
                       href={child.href}
                       className="ga-nav-subitem"
-                      aria-current={isRouteActive(pathname, child.href) ? "page" : undefined}
+                      aria-current={isChildActive(pathname, child) ? "page" : undefined}
                     >
                       {child.label}
                     </Link>

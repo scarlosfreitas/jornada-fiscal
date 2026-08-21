@@ -8,12 +8,14 @@ import {
   Settings,
   type LucideIcon,
 } from "lucide-react";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES, isListaDetalheRoute, isRegraDetalheRoute } from "@/lib/routes";
 
 export interface NavChild {
   key: string;
   label: string;
   href: string;
+  /** Casamento extra de rota, além da igualdade/prefixo padrão (ex.: telas de detalhe fora do prefixo da listagem). */
+  matchExtra?: (pathname: string) => boolean;
 }
 
 export interface NavItem {
@@ -36,8 +38,8 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Bell,
     badge: 12,
     children: [
-      { key: "regras", label: "Regras", href: ROUTES.regrasDeAlerta },
-      { key: "listas", label: "Listas", href: ROUTES.alertasListas },
+      { key: "regras", label: "Regras", href: ROUTES.regrasDeAlerta, matchExtra: isRegraDetalheRoute },
+      { key: "listas", label: "Listas", href: ROUTES.alertasListas, matchExtra: isListaDetalheRoute },
       { key: "alertas_lista", label: "Alertas", href: ROUTES.alertasGerados },
     ],
   },

@@ -4,8 +4,10 @@ export const LOGIN_ROUTE = "/login";
 export const ROUTES = {
   painel: APP_BASE,
   regrasDeAlerta: `${APP_BASE}/regras/regras-de-alerta`,
+  novaRegra: `${APP_BASE}/regras/nova`,
   alertasGerados: `${APP_BASE}/regras/alertas-gerados`,
   alertasListas: `${APP_BASE}/alertas/listas`,
+  novaLista: `${APP_BASE}/alertas/nova`,
   monitoramento: `${APP_BASE}/monitoramento`,
   contribuinteLinhaDoTempo: `${APP_BASE}/contribuintes/linha-do-tempo`,
   contribuinteHistorico: `${APP_BASE}/contribuintes/historico`,
@@ -33,6 +35,33 @@ export const ROUTES = {
 
 export function regraDetalhe(codigo: string) {
   return `${APP_BASE}/regras/${codigo}`;
+}
+
+export function listaDetalhe(codigo: string) {
+  return `${APP_BASE}/alertas/${codigo}`;
+}
+
+/**
+ * `/app/regras/{codigo}` e `/app/regras/regras-de-alerta`|`/app/regras/alertas-gerados`
+ * são rotas irmãs sob o mesmo prefixo — um `startsWith` simples não distingue o
+ * detalhe de uma regra das outras duas telas estáticas. Usadas pela barra lateral
+ * para destacar "Regras" também nas rotas de detalhe.
+ */
+export function isRegraDetalheRoute(pathname: string): boolean {
+  const rest = pathname.replace(`${APP_BASE}/regras/`, "");
+  return (
+    pathname.startsWith(`${APP_BASE}/regras/`) &&
+    !rest.includes("/") &&
+    rest !== "regras-de-alerta" &&
+    rest !== "alertas-gerados" &&
+    rest !== ""
+  );
+}
+
+/** Mesma lógica de `isRegraDetalheRoute`, para `/app/alertas/{codigo}` vs. `/app/alertas/listas`. */
+export function isListaDetalheRoute(pathname: string): boolean {
+  const rest = pathname.replace(`${APP_BASE}/alertas/`, "");
+  return pathname.startsWith(`${APP_BASE}/alertas/`) && !rest.includes("/") && rest !== "listas" && rest !== "";
 }
 
 export function contribuinteDetalhe(id: string) {
