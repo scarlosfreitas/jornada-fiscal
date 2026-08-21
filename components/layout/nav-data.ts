@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Bell,
+  Network,
   Users,
   ClipboardList,
   BarChart3,
@@ -41,6 +42,17 @@ export const NAV_ITEMS: NavItem[] = [
       { key: "regras", label: "Regras", href: ROUTES.regrasDeAlerta, matchExtra: isRegraDetalheRoute },
       { key: "listas", label: "Listas", href: ROUTES.alertasListas, matchExtra: isListaDetalheRoute },
       { key: "alertas_lista", label: "Alertas", href: ROUTES.alertasGerados },
+    ],
+  },
+  {
+    key: "ontologia",
+    label: "Ontologia FtM",
+    href: ROUTES.ftmEntidades,
+    icon: Network,
+    children: [
+      { key: "ftm_entidades", label: "Entidades", href: ROUTES.ftmEntidades },
+      { key: "ftm_propriedades", label: "Propriedades", href: ROUTES.ftmPropriedades },
+      { key: "ftm_acoes", label: "Tipos de Ação", href: ROUTES.ftmTiposAcao },
     ],
   },
   {
@@ -119,6 +131,9 @@ export const APP_FEATURES: AppFeature[] = [
   { key: "regras", label: "Regras", path: "Gestão de Alertas / Regras", module: "alertas", href: ROUTES.regrasDeAlerta },
   { key: "listas", label: "Listas", path: "Gestão de Alertas / Listas", module: "alertas", href: ROUTES.alertasListas },
   { key: "alertas", label: "Alertas", path: "Gestão de Alertas / Alertas", module: "alertas", href: ROUTES.alertasGerados },
+  { key: "ftm_entidades", label: "Entidades", path: "Ontologia FtM / Entidades", module: "ontologia", href: ROUTES.ftmEntidades },
+  { key: "ftm_propriedades", label: "Propriedades", path: "Ontologia FtM / Propriedades", module: "ontologia", href: ROUTES.ftmPropriedades },
+  { key: "ftm_acoes", label: "Tipos de Ação", path: "Ontologia FtM / Tipos de Ação", module: "ontologia", href: ROUTES.ftmTiposAcao },
   { key: "minhas_os", label: "Minhas OS", path: "Ordens de Serviço / Minhas OS", module: "os", href: ROUTES.ordensDeServicoMinhas },
   { key: "gestao_os", label: "Gestão de OS", path: "Ordens de Serviço / Gestão de OS", module: "os", href: ROUTES.ordensDeServicoGestao },
   { key: "linha_tempo", label: "Linha do Tempo", path: "Contribuinte / Linha do Tempo", module: "contribuinte", href: ROUTES.contribuinteLinhaDoTempo },
