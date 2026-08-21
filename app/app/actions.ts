@@ -14,11 +14,16 @@ import {
  * sigilo fiscal. Filtrar no cliente exigiria enviar a base inteira para o
  * navegador. Aqui só os resultados da consulta trafegam.
  */
-export async function buscarContribuintes(query: string): Promise<ContribuinteResult[]> {
+export async function buscarContribuintes(
+  query: string,
+  apenasInscritos = true,
+): Promise<ContribuinteResult[]> {
   // Server action é um endpoint público: sem sessão, não devolve nada.
   const session = await auth();
   if (!session?.user?.id) return [];
 
   const q = query.trim();
-  return q ? await buscarEntidades(q, session.user.id) : await getContribuintesRecentes(session.user.id);
+  return q
+    ? await buscarEntidades(q, session.user.id, apenasInscritos)
+    : await getContribuintesRecentes(session.user.id, apenasInscritos);
 }

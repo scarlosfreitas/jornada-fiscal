@@ -54,6 +54,20 @@ A barra lateral SHALL apresentar a marca do produto e a navegação principal do
 - Operador: Ciência, TIF, Auto de Embaraço, Auto Principal
 - Configuração: Usuários, Perfil de Acesso
 
+Os subitens do grupo Contribuinte SHALL gerar links dinâmicos que incluem o `id_contribuinte` do contribuinte atualmente aberto. Os caminhos SHALL ser:
+
+| Label | Rota |
+| --- | --- |
+| Linha do Tempo | `/app/contribuintes/[id]` ou `/app/contribuintes/[id]/linha-do-tempo` |
+| Situação Cadastral | `/app/contribuintes/[id]/situacao-cadastral` |
+| Histórico | `/app/contribuintes/[id]/historico` |
+| Recolhimentos | `/app/contribuintes/[id]/recolhimentos` |
+| Entrega de Declarações | `/app/contribuintes/[id]/entrega-declaracoes` |
+| Valores Declarados | `/app/contribuintes/[id]/valores-declarados` |
+| Emissão de Documentos | `/app/contribuintes/[id]/emissao-documentos` |
+
+Quando nenhum contribuinte estiver aberto (navegação fora da ficha), os subitens do grupo Contribuinte SHALL manter os links estáticos existentes (sem `[id]`).
+
 Itens com subitens SHALL exibir um indicador de expansão; itens com contagem pendente SHALL exibir essa contagem ao lado do rótulo.
 
 #### Scenario: Item de navegação sem subitens
@@ -76,10 +90,15 @@ Itens com subitens SHALL exibir um indicador de expansão; itens com contagem pe
 - **WHEN** a pessoa usuária aciona um subitem
 - **THEN** o sistema navega para a tela correspondente
 
-#### Scenario: Navegar para uma tela da Ontologia FtM
+#### Scenario: Links do Contribuinte com ficha aberta
 
-- **WHEN** a pessoa usuária aciona o subitem Entidades, Propriedades ou Tipos de Ação do grupo Ontologia FtM
-- **THEN** o sistema navega para a tela correspondente e o subitem acionado aparece destacado como ativo, com o grupo Ontologia FtM expandido
+- **WHEN** a pessoa usuária está na ficha de um contribuinte com `id` igual a "123"
+- **THEN** os subitens do grupo Contribuinte na sidebar geram links como `/app/contribuintes/123/situacao-cadastral`, `/app/contribuintes/123/historico`, etc.
+
+#### Scenario: Links do Contribuinte sem ficha aberta
+
+- **WHEN** a pessoa usuária está fora da ficha de um contribuinte
+- **THEN** os subitens do grupo Contribuinte mantêm os links estáticos existentes
 
 #### Scenario: Destaque do item correspondente à tela atual
 

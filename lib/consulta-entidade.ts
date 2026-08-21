@@ -34,6 +34,7 @@ interface LinhaEntidade {
   nome: string | null;
   razao_social: string | null;
   nome_fantasia: string | null;
+  situacao_nome: string | null;
 }
 
 const LIMITE_RESULTADOS = 10;
@@ -107,11 +108,13 @@ function mascaraIe(digitos: string): string {
 function linhaIdentificacao(cnpj: string | null, cpf: string | null, ie: string | null): string {
   const partes: string[] = [];
   if (cnpj) {
-    partes.push(mascaraCnpj(cnpj));
+    partes.push(`CNPJ ${mascaraCnpj(cnpj)}`);
   } else if (cpf) {
-    partes.push(mascaraCpf(cpf));
+    partes.push(`CPF ${mascaraCpf(cpf)}`);
   }
-  if (ie) partes.push(mascaraIe(ie));
+  if (ie && ie.trim() !== "") {
+    partes.push(`IE ${mascaraIe(ie)}`);
+  }
   return partes.join(" · ");
 }
 
@@ -119,18 +122,35 @@ function nomeExibicao(linha: LinhaEntidade): string {
   return linha.razao_social ?? linha.nome ?? linha.nome_fantasia ?? "";
 }
 
+function formatarSituacao(situacao: string | null): string {
+  if (!situacao) return "Ativo";
+  const lower = situacao.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+function badgeVariantParaSituacao(situacao: string | null, hasIe: boolean): BadgeVariant {
+  if (!situacao) return hasIe ? "success" : "neutral";
+  const s = situacao.toUpperCase();
+  if (s.includes("ATIVO") || s.includes("HABILITADO")) return "success";
+  if (s.includes("SUSPENSO") || s.includes("PARALISADO") || s.includes("PROCEDIMENTO")) return "warning";
+  if (s.includes("BAIXADO") || s.includes("CANCELADO") || s.includes("INAPTO") || s.includes("NULO")) return "danger";
+  return "neutral";
+}
+
 function montarResultado(linha: LinhaEntidade): ContribuinteResult {
   const id = linha.cad_id.toString();
+  const hasIe = Boolean(linha.ie && linha.ie.trim() !== "");
+  const badgeLabel = linha.situacao_nome
+    ? formatarSituacao(linha.situacao_nome)
+    : (hasIe ? "Ativo" : "Não inscrito");
+  const badgeVariant = badgeVariantParaSituacao(linha.situacao_nome, hasIe);
+
   return {
     id,
     nome: nomeExibicao(linha),
     cnpjIe: linhaIdentificacao(linha.cnpj, linha.cpf, linha.ie),
-    // A base analítica ainda não expõe situação cadastral; enquanto isso não
-    // muda, todo resultado é "Ativo" (decisão de produto — ver design.md,
-    // decisão 7). Quando a origem passar a trazer a situação, este é o único
-    // ponto a mudar.
-    badgeLabel: "Ativo",
-    badgeVariant: "success",
+    badgeLabel,
+    badgeVariant,
     href: contribuinteDetalhe(id),
   };
 }
@@ -163,12 +183,17 @@ async function comFallbackParaListaVazia<T>(consulta: () => Promise<T[]>): Promi
   }
 }
 
-async function consultarDocumentoExato(digitos: string): Promise<LinhaEntidade[]> {
+async function consultarDocumentoExato(digitos: string, apenasInscritos = true): Promise<LinhaEntidade[]> {
   if (!digitos) return [];
+  const filtroInscritos = apenasInscritos
+    ? Prisma.sql`AND (ie IS NOT NULL AND ie <> '')`
+    : Prisma.empty;
+
   return prisma.$queryRaw<LinhaEntidade[]>(Prisma.sql`
-    SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia
+    SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia, situacao_nome
     FROM analytics.consulta_entidade
-    WHERE cnpj = ${digitos} OR cpf = ${digitos} OR ie = ${digitos}
+    WHERE (cnpj = ${digitos} OR cpf = ${digitos} OR ie = ${digitos})
+      ${filtroInscritos}
     ORDER BY cad_id
     LIMIT ${LIMITE_RESULTADOS}
   `);
@@ -188,10 +213,15 @@ async function consultarComTexto(
   normalizado: string,
   termos: string[],
   digitos: string,
+  apenasInscritos = true,
 ): Promise<LinhaEntidade[]> {
   const condicaoExata = digitos
     ? Prisma.sql`(cnpj = ${digitos} OR cpf = ${digitos} OR ie = ${digitos})`
     : Prisma.sql`false`;
+
+  const filtroInscritos = apenasInscritos
+    ? Prisma.sql`AND (ie IS NOT NULL AND ie <> '')`
+    : Prisma.empty;
 
   const condicaoContem = Prisma.join(
     termos.map(
@@ -202,25 +232,28 @@ async function consultarComTexto(
 
   return prisma.$queryRaw<LinhaEntidade[]>(Prisma.sql`
     WITH exato AS (
-      SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia,
+      SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia, situacao_nome,
              0 AS tier, 1::real AS sim
       FROM analytics.consulta_entidade
       WHERE ${condicaoExata}
+        ${filtroInscritos}
     ),
     prefixo AS (
-      SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia,
+      SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia, situacao_nome,
              1 AS tier, 1::real AS sim
       FROM analytics.consulta_entidade
       WHERE search_index LIKE ${`${escaparCoringasLike(normalizado)}%`} ESCAPE '\\'
+        ${filtroInscritos}
     ),
     candidatos AS (
       SELECT cad_id
       FROM analytics.consulta_entidade
       WHERE ${condicaoContem}
+        ${filtroInscritos}
       LIMIT ${LIMITE_CANDIDATOS_SEMELHANCA}
     ),
     contem AS (
-      SELECT e.cad_id, e.cnpj, e.cpf, e.ie, e.nome, e.razao_social, e.nome_fantasia,
+      SELECT e.cad_id, e.cnpj, e.cpf, e.ie, e.nome, e.razao_social, e.nome_fantasia, e.situacao_nome,
              2 AS tier, similarity(e.search_index, ${normalizado}) AS sim
       FROM candidatos c
       JOIN analytics.consulta_entidade e ON e.cad_id = c.cad_id
@@ -234,11 +267,11 @@ async function consultarComTexto(
     ),
     dedup AS (
       SELECT DISTINCT ON (cad_id)
-        cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia, tier, sim
+        cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia, situacao_nome, tier, sim
       FROM unificado
       ORDER BY cad_id, tier ASC, sim DESC
     )
-    SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia
+    SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia, situacao_nome
     FROM dedup
     ORDER BY tier ASC, sim DESC, cad_id ASC
     LIMIT ${LIMITE_RESULTADOS}
@@ -257,6 +290,7 @@ async function consultarComTexto(
 export async function buscarEntidades(
   textoBruto: string,
   usuarioId: string,
+  apenasInscritos = true,
 ): Promise<ContribuinteResult[]> {
   const normalizado = normalizar(textoBruto);
   const digitos = extrairDigitos(normalizado);
@@ -266,13 +300,15 @@ export async function buscarEntidades(
     // Só ruído após o descarte de termos curtos: comporta-se como consulta
     // sem texto, exceto quando o texto é um documento exato (spec: "Texto
     // composto apenas de ruído" / "Termos com menos de 3 caracteres").
-    const exatos = await comFallbackParaListaVazia(() => consultarDocumentoExato(digitos));
+    const exatos = await comFallbackParaListaVazia(() =>
+      consultarDocumentoExato(digitos, apenasInscritos),
+    );
     if (exatos.length > 0) return exatos.map(montarResultado);
-    return getContribuintesRecentes(usuarioId);
+    return getContribuintesRecentes(usuarioId, apenasInscritos);
   }
 
   const linhas = await comFallbackParaListaVazia(() =>
-    consultarComTexto(normalizado, termos, digitos),
+    consultarComTexto(normalizado, termos, digitos, apenasInscritos),
   );
   return linhas.map(montarResultado);
 }
@@ -280,7 +316,10 @@ export async function buscarEntidades(
 /** Até `LIMITE_RECENTES` fichas abertas mais recentemente pelo usuário, do mais
  * recente para o mais antigo. `cad_id` sem entidade correspondente na base
  * analítica é omitido. */
-export async function getContribuintesRecentes(usuarioId: string): Promise<ContribuinteResult[]> {
+export async function getContribuintesRecentes(
+  usuarioId: string,
+  apenasInscritos = true,
+): Promise<ContribuinteResult[]> {
   const acessos = await prisma.contribuinteAcesso.findMany({
     where: { usuarioId },
     orderBy: { acessadoEm: "desc" },
@@ -290,11 +329,16 @@ export async function getContribuintesRecentes(usuarioId: string): Promise<Contr
   if (acessos.length === 0) return [];
 
   const ids = acessos.map((acesso) => acesso.cadId);
+  const filtroInscritos = apenasInscritos
+    ? Prisma.sql`AND (ie IS NOT NULL AND ie <> '')`
+    : Prisma.empty;
+
   const linhas = await comFallbackParaListaVazia(() =>
     prisma.$queryRaw<LinhaEntidade[]>(Prisma.sql`
-      SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia
+      SELECT cad_id, cnpj, cpf, ie, nome, razao_social, nome_fantasia, situacao_nome
       FROM analytics.consulta_entidade
       WHERE cad_id IN (${Prisma.join(ids)})
+        ${filtroInscritos}
     `),
   );
   const linhaPorId = new Map(linhas.map((linha) => [linha.cad_id.toString(), linha]));

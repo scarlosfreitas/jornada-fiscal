@@ -7,7 +7,7 @@ import { FieldHistoryModal } from "./FieldHistoryModal";
 
 interface SituacaoCadastralTabProps {
   campos: CampoCadastral[];
-  ficha: ContribuinteFicha;
+  ficha?: ContribuinteFicha;
 }
 
 export function SituacaoCadastralTab({ campos, ficha }: SituacaoCadastralTabProps) {
@@ -43,7 +43,7 @@ export function SituacaoCadastralTab({ campos, ficha }: SituacaoCadastralTabProp
         </div>
       </div>
 
-      {aberto && (
+      {aberto && ficha && (
         <FieldHistoryModal
           title={aberto.label}
           rows={aberto.rows ?? []}
