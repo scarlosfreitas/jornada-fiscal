@@ -14,7 +14,8 @@ import { ROUTES, isListaDetalheRoute, isRegraDetalheRoute } from "@/lib/routes";
 export interface NavChild {
   key: string;
   label: string;
-  href: string;
+  /** Ausente quando o subitem depende de um contexto ainda não resolvido (ex.: contribuinte sem ficha aberta) — nesse caso o subitem fica inerte. */
+  href?: string;
   /** Casamento extra de rota, além da igualdade/prefixo padrão (ex.: telas de detalhe fora do prefixo da listagem). */
   matchExtra?: (pathname: string) => boolean;
 }
@@ -22,7 +23,8 @@ export interface NavChild {
 export interface NavItem {
   key: string;
   label: string;
-  href: string;
+  /** Ausente em itens cujo destino depende de subitens sem `href` próprio (ex.: Contribuinte). */
+  href?: string;
   icon: LucideIcon;
   /** Valor estático do protótipo — virá de dados reais em change futura. */
   badge?: number;
@@ -69,16 +71,15 @@ export const NAV_ITEMS: NavItem[] = [
   {
     key: "contrib",
     label: "Contribuinte",
-    href: ROUTES.contribuinteLinhaDoTempo,
     icon: Users,
     children: [
-      { key: "linha_tempo", label: "Linha do Tempo", href: ROUTES.contribuinteLinhaDoTempo },
-      { key: "sit", label: "Situação Cadastral", href: ROUTES.contribuinteSituacaoCadastral },
-      { key: "hist", label: "Histórico", href: ROUTES.contribuinteHistorico },
-      { key: "rec", label: "Recolhimentos", href: ROUTES.contribuinteRecolhimentos },
-      { key: "dec", label: "Entrega de Declarações", href: ROUTES.contribuinteEntregaDeclaracoes },
-      { key: "val", label: "Valores Declarados", href: ROUTES.contribuinteValoresDeclarados },
-      { key: "doc", label: "Emissão de Documentos", href: ROUTES.contribuinteEmissaoDocumentos },
+      { key: "linha_tempo", label: "Linha do Tempo" },
+      { key: "sit", label: "Situação Cadastral" },
+      { key: "hist", label: "Histórico" },
+      { key: "rec", label: "Recolhimentos" },
+      { key: "dec", label: "Entrega de Declarações" },
+      { key: "val", label: "Valores Declarados" },
+      { key: "doc", label: "Emissão de Documentos" },
     ],
   },
   {
@@ -136,13 +137,6 @@ export const APP_FEATURES: AppFeature[] = [
   { key: "ftm_acoes", label: "Tipos de Ação", path: "Ontologia FtM / Tipos de Ação", module: "ontologia", href: ROUTES.ftmTiposAcao },
   { key: "minhas_os", label: "Minhas OS", path: "Ordens de Serviço / Minhas OS", module: "os", href: ROUTES.ordensDeServicoMinhas },
   { key: "gestao_os", label: "Gestão de OS", path: "Ordens de Serviço / Gestão de OS", module: "os", href: ROUTES.ordensDeServicoGestao },
-  { key: "linha_tempo", label: "Linha do Tempo", path: "Contribuinte / Linha do Tempo", module: "contribuinte", href: ROUTES.contribuinteLinhaDoTempo },
-  { key: "sit", label: "Situação Cadastral", path: "Contribuinte / Situação Cadastral", module: "contribuinte", href: ROUTES.contribuinteSituacaoCadastral },
-  { key: "hist", label: "Histórico", path: "Contribuinte / Histórico", module: "contribuinte", href: ROUTES.contribuinteHistorico },
-  { key: "rec", label: "Recolhimentos", path: "Contribuinte / Recolhimentos", module: "contribuinte", href: ROUTES.contribuinteRecolhimentos },
-  { key: "dec", label: "Entrega de Declarações", path: "Contribuinte / Entrega de Declarações", module: "contribuinte", href: ROUTES.contribuinteEntregaDeclaracoes },
-  { key: "val", label: "Valores Declarados", path: "Contribuinte / Valores Declarados", module: "contribuinte", href: ROUTES.contribuinteValoresDeclarados },
-  { key: "doc", label: "Emissão de Documentos", path: "Contribuinte / Emissão de Documentos", module: "contribuinte", href: ROUTES.contribuinteEmissaoDocumentos },
   { key: "emp_abertas", label: "Empresas abertas", path: "Relatórios / Empresas abertas", module: "relatorios", href: ROUTES.relatoriosEmpresasAbertas },
   { key: "reativacoes", label: "Reativações", path: "Relatórios / Reativações", module: "relatorios", href: ROUTES.relatoriosReativacoes },
   { key: "acum_credito", label: "Acumuladores de Crédito", path: "Relatórios / Acumuladores de Crédito", module: "relatorios", href: ROUTES.relatoriosAcumuladoresCredito },

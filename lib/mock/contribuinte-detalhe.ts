@@ -14,9 +14,7 @@ import { lerFonteOu } from "@/lib/fontes";
  *
  * Por ora as funções IGNORAM o `id`: a ficha é a mesma para qualquer contribuinte.
  *
- * Inconsistência herdada do protótipo, transcrita como está: o Histórico
- * cadastral (getHistoricoCadastral) traz um contribuinte diferente do resto
- * da ficha ("EDINALDO TAVARES FERREIRA", e não "Metalúrgica Andrade S/A").
+ * A aba Histórico não usa este módulo — ver `lib/sate-hist-regime.ts`.
  */
 
 export type BadgeVariant = "success" | "warning" | "danger" | "neutral";
@@ -218,71 +216,6 @@ const CAMPOS: CampoCadastral[] = [
 export async function getSituacaoCadastral(id: string): Promise<CampoCadastral[]> {
   void id;
   return lerFonteOu("situacao-cadastral", CAMPOS);
-}
-
-/* --------------------------------------------------------------------------
-   Histórico cadastral
-   -------------------------------------------------------------------------- */
-
-export interface HistoricoColuna {
-  key: string;
-  label: string;
-  field: keyof HistoricoRegistro;
-  width: string;
-  mono: boolean;
-  /** Sempre exibida; não pode ser desmarcada. */
-  fixed: boolean;
-  /** Participa da comparação que decide se o registro é mantido. */
-  compare: boolean;
-}
-
-export interface HistoricoRegistro {
-  cad_hist_ini: string;
-  cad_hist_fim: string;
-  cad_reg_est_nome: string;
-  cad_reg_fed_nome: string;
-  cad_situacao_nome: string;
-  cad_razao_social: string;
-  cad_nat_jur_nome: string;
-}
-
-export interface HistoricoCadastral {
-  colunas: HistoricoColuna[];
-  registros: HistoricoRegistro[];
-}
-
-const HISTORICO_COLUNAS: HistoricoColuna[] = [
-  { key: "ini", label: "Data início", field: "cad_hist_ini", width: "150px", mono: true, fixed: true, compare: false },
-  { key: "fim", label: "Data fim", field: "cad_hist_fim", width: "150px", mono: true, fixed: false, compare: false },
-  { key: "reg_est", label: "Regime estadual", field: "cad_reg_est_nome", width: "170px", mono: false, fixed: false, compare: true },
-  { key: "reg_fed", label: "Regime federal", field: "cad_reg_fed_nome", width: "170px", mono: false, fixed: false, compare: true },
-  { key: "situacao", label: "Situação", field: "cad_situacao_nome", width: "130px", mono: false, fixed: false, compare: true },
-  { key: "razao", label: "Razão social", field: "cad_razao_social", width: "320px", mono: false, fixed: false, compare: true },
-  { key: "nat_jur", label: "Natureza jurídica", field: "cad_nat_jur_nome", width: "250px", mono: false, fixed: false, compare: true },
-];
-
-const HISTORICO_REGISTROS: HistoricoRegistro[] = [
-  { cad_hist_ini: "29/06/1999 00:00:00", cad_hist_fim: "31/12/2006 00:00:00", cad_reg_est_nome: "REGIME EXTINTO", cad_reg_fed_nome: "OUTROS", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "31/12/2006 00:00:00", cad_hist_fim: "30/06/2007 00:00:00", cad_reg_est_nome: "REGIME EXTINTO", cad_reg_fed_nome: "OUTROS", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "30/06/2007 00:00:00", cad_hist_fim: "01/10/2013 00:00:00", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "01/10/2013 00:00:00", cad_hist_fim: "21/10/2015 22:18:08", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA  - ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "21/10/2015 22:18:08", cad_hist_fim: "06/06/2021 23:59:59", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA-ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "07/06/2021 00:00:00", cad_hist_fim: "08/01/2024 23:59:59", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "SUSPENSO", cad_razao_social: "EDINALDO TAVARES FERREIRA-ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "09/01/2024 00:00:00", cad_hist_fim: "13/02/2024 23:59:59", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA-ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "14/02/2024 00:00:00", cad_hist_fim: "19/02/2024 16:09:21", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "SUSPENSO", cad_razao_social: "EDINALDO TAVARES FERREIRA-ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "19/02/2024 16:09:21", cad_hist_fim: "02/05/2024 23:59:59", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA-ME", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "03/05/2024 00:00:00", cad_hist_fim: "25/02/2025 23:59:59", cad_reg_est_nome: "NORMAL", cad_reg_fed_nome: "OUTROS", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO TAVARES FERREIRA", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "26/02/2025 00:00:00", cad_hist_fim: "15/07/2026 23:59:59", cad_reg_est_nome: "NORMAL", cad_reg_fed_nome: "OUTROS", cad_situacao_nome: "SUSPENSO", cad_razao_social: "EDINALDO TAVARES FERREIRA", cad_nat_jur_nome: "EMPRESÁRIO (INDIVIDUAL)" },
-  { cad_hist_ini: "16/07/2026 00:00:00", cad_hist_fim: "02/08/2026 23:59:59", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "SUSPENSO", cad_razao_social: "EDINALDO T. FERREIRA LTDA", cad_nat_jur_nome: "SOCIEDADE EMPRESÁRIA LIMITADA" },
-  { cad_hist_ini: "03/08/2026 00:00:00", cad_hist_fim: "31/12/4000 00:00:00", cad_reg_est_nome: "SIMPLES NACIONAL", cad_reg_fed_nome: "SIMPLES NACIONAL", cad_situacao_nome: "ATIVO", cad_razao_social: "EDINALDO T. FERREIRA LTDA", cad_nat_jur_nome: "SOCIEDADE EMPRESÁRIA LIMITADA" },
-];
-
-export async function getHistoricoCadastral(id: string): Promise<HistoricoCadastral> {
-  void id;
-  return lerFonteOu("historico-cadastral", {
-    colunas: HISTORICO_COLUNAS,
-    registros: HISTORICO_REGISTROS,
-  });
 }
 
 /* --------------------------------------------------------------------------

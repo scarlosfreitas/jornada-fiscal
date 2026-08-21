@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Columns3, ChevronDown, Check } from "lucide-react";
-import type { HistoricoCadastral, HistoricoRegistro } from "@/lib/mock/contribuinte-detalhe";
+import type { HistoricoCadastral, HistoricoRegistro } from "@/lib/sate-hist-regime";
 import { TabPageHead } from "./TabPageHead";
 
 /**
@@ -149,7 +149,12 @@ export function HistoricoCadastralTab({ dados }: { dados: HistoricoCadastral }) 
             ))}
           </tbody>
         </table>
-        {linhas.length === 0 && (
+        {registros.length === 0 && (
+          <div className="ga-body-sm ga-muted" style={{ padding: "24px 20px 26px" }}>
+            Não há histórico cadastral a exibir para o contribuinte.
+          </div>
+        )}
+        {registros.length > 0 && linhas.length === 0 && (
           <div className="ga-body-sm ga-muted" style={{ padding: "24px 20px 26px" }}>
             Nenhuma alteração cadastral nas colunas selecionadas.
           </div>

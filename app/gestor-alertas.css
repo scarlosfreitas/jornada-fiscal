@@ -264,6 +264,10 @@ input::placeholder, textarea::placeholder { color: var(--ga-gray-400); }
 .ga-nav-subitem:hover { background: rgba(255, 255, 255, .07); color: var(--ga-white); }
 .ga-nav-subitem[aria-current="page"],
 .ga-nav-subitem.is-active { background: rgba(255, 255, 255, .10); color: var(--ga-white); }
+.ga-nav-subitem.is-disabled {
+  cursor: not-allowed; color: rgba(255, 255, 255, .3);
+}
+.ga-nav-subitem.is-disabled:hover { background: transparent; color: rgba(255, 255, 255, .3); }
 
 .ga-nav-divider { height: 1px; background: rgba(255, 255, 255, .08); margin: 10px var(--ga-space-3); }
 .ga-sidebar-footer { flex: none; padding: var(--ga-space-3) 10px; border-top: 1px solid rgba(255, 255, 255, .08); }

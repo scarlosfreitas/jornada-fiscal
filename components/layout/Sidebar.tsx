@@ -7,6 +7,7 @@ import { ArrowRight, ChevronDown, Menu, Search } from "lucide-react";
 import { LogoIcon } from "@/components/icons/LogoIcon";
 import { APP_FEATURES, NAV_ITEMS, type NavChild, type NavItem } from "./nav-data";
 import { ROUTES, CONTRIBUINTE_TABS, contribuinteTab, type ContribuinteTab } from "@/lib/routes";
+import { useShellSearch } from "@/components/layout/ShellSearchProvider";
 
 const CONTRIB_KEY_TO_TAB: Record<string, ContribuinteTab> = {
   linha_tempo: "linha-do-tempo",
@@ -33,6 +34,7 @@ function isRouteActive(pathname: string, href: string, matchExtra?: (pathname: s
 }
 
 function isChildActive(pathname: string, child: NavChild): boolean {
+  if (!child.href) return false;
   return isRouteActive(pathname, child.href, child.matchExtra);
 }
 
@@ -85,6 +87,8 @@ export function Sidebar() {
   const [groupOverrides, setGroupOverrides] = useState<Record<string, boolean>>({});
   const navItems = useMemo(() => getNavItems(pathname), [pathname]);
   const activeParentKey = findActiveParentKey(pathname, navItems);
+  const contribuinteId = useMemo(() => extractContribuinteId(pathname), [pathname]);
+  const { abrirBuscaContribuinte } = useShellSearch();
 
   const [featQuery, setFeatQuery] = useState("");
   const [featSearchOpen, setFeatSearchOpen] = useState(false);
@@ -146,7 +150,7 @@ export function Sidebar() {
           const Icon = item.icon;
           const hasChildren = !!item.children;
           const isOpen = isGroupOpen(item.key);
-          const isActive = !hasChildren && isRouteActive(pathname, item.href);
+          const isActive = !hasChildren && !!item.href && isRouteActive(pathname, item.href);
 
           return (
             <div key={item.key}>
@@ -155,7 +159,13 @@ export function Sidebar() {
                   type="button"
                   className="ga-nav-item"
                   aria-expanded={isOpen}
-                  onClick={() => toggleGroup(item.key)}
+                  onClick={() => {
+                    if (item.key === "contrib" && !contribuinteId) {
+                      abrirBuscaContribuinte();
+                      return;
+                    }
+                    toggleGroup(item.key);
+                  }}
                 >
                   <Icon className="ga-nav-icon" />
                   <span className="ga-nav-label">{item.label}</span>
@@ -166,7 +176,7 @@ export function Sidebar() {
                 </button>
               ) : (
                 <Link
-                  href={item.href}
+                  href={item.href!}
                   className="ga-nav-item"
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -180,16 +190,26 @@ export function Sidebar() {
 
               {hasChildren && isOpen && !collapsed && (
                 <div className="ga-nav-group">
-                  {item.children!.map((child) => (
-                    <Link
-                      key={child.key}
-                      href={child.href}
-                      className="ga-nav-subitem"
-                      aria-current={isChildActive(pathname, child) ? "page" : undefined}
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
+                  {item.children!.map((child) =>
+                    child.href ? (
+                      <Link
+                        key={child.key}
+                        href={child.href}
+                        className="ga-nav-subitem"
+                        aria-current={isChildActive(pathname, child) ? "page" : undefined}
+                      >
+                        {child.label}
+                      </Link>
+                    ) : (
+                      <span
+                        key={child.key}
+                        className="ga-nav-subitem is-disabled"
+                        aria-disabled="true"
+                      >
+                        {child.label}
+                      </span>
+                    ),
+                  )}
                 </div>
               )}
 

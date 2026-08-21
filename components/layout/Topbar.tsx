@@ -8,6 +8,7 @@ import type { ContribuinteResult } from "@/lib/consulta-entidade";
 import { buscarContribuintes } from "@/app/app/actions";
 import { Switch } from "@/components/ftm/Switch";
 import { ROUTES } from "@/lib/routes";
+import { useShellSearch } from "@/components/layout/ShellSearchProvider";
 
 function getInitials(name?: string | null) {
   const tokens = name?.trim().split(/\s+/).filter(Boolean) ?? [];
@@ -37,6 +38,14 @@ export function Topbar({ userName, userCargo, recentes }: TopbarProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const userContainerRef = useRef<HTMLDivElement>(null);
+
+  const { registrarAbertura } = useShellSearch();
+  useEffect(() => {
+    registrarAbertura(() => {
+      setSearchOpen(true);
+      searchInputRef.current?.focus();
+    });
+  }, [registrarAbertura]);
 
   const buscando = query.trim() !== "";
   const resultsHeading = buscando ? "Resultados" : "Contribuintes recentes";

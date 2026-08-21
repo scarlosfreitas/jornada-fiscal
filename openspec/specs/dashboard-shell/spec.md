@@ -66,7 +66,11 @@ Os subitens do grupo Contribuinte SHALL gerar links dinâmicos que incluem o `id
 | Valores Declarados | `/app/contribuintes/[id]/valores-declarados` |
 | Emissão de Documentos | `/app/contribuintes/[id]/emissao-documentos` |
 
-Quando nenhum contribuinte estiver aberto (navegação fora da ficha), os subitens do grupo Contribuinte SHALL manter os links estáticos existentes (sem `[id]`).
+O contribuinte atualmente aberto SHALL ser determinado exclusivamente pelo endereço da tela em exibição. Um segmento que corresponda ao nome de uma das abas da ficha NÃO SHALL ser tratado como `id_contribuinte`.
+
+Quando nenhum contribuinte estiver aberto (navegação fora da ficha), os sete subitens do grupo Contribuinte SHALL ser apresentados inertes: sem link, sem destino de navegação, visualmente distinguidos como indisponíveis e anunciados como desabilitados para tecnologias assistivas. Nenhum subitem do grupo Contribuinte SHALL, em nenhuma situação, apontar para um endereço sem `id_contribuinte`.
+
+Quando nenhum contribuinte estiver aberto, acionar o item pai "Contribuinte" SHALL abrir a busca de contribuinte da barra superior com o foco no campo de busca, exibindo o mesmo conteúdo que seria exibido ao focar o campo diretamente. Havendo contribuinte aberto, acionar o item pai SHALL apenas expandir ou recolher seus subitens, como nos demais grupos.
 
 Itens com subitens SHALL exibir um indicador de expansão; itens com contagem pendente SHALL exibir essa contagem ao lado do rótulo.
 
@@ -98,7 +102,27 @@ Itens com subitens SHALL exibir um indicador de expansão; itens com contagem pe
 #### Scenario: Links do Contribuinte sem ficha aberta
 
 - **WHEN** a pessoa usuária está fora da ficha de um contribuinte
-- **THEN** os subitens do grupo Contribuinte mantêm os links estáticos existentes
+- **THEN** os sete subitens do grupo Contribuinte aparecem inertes, sem link, distinguidos como indisponíveis e anunciados como desabilitados
+
+#### Scenario: Acionar um subitem inerte do Contribuinte
+
+- **WHEN** a pessoa usuária aciona um subitem do grupo Contribuinte estando fora da ficha de um contribuinte
+- **THEN** nenhuma navegação ocorre e a tela em exibição permanece a mesma
+
+#### Scenario: Acionar o item Contribuinte sem ficha aberta
+
+- **WHEN** a pessoa usuária aciona o item "Contribuinte" da barra lateral estando fora da ficha de um contribuinte
+- **THEN** a busca de contribuinte da barra superior é aberta com o foco no campo de busca, listando os contribuintes recentes da pessoa usuária
+
+#### Scenario: Acionar o item Contribuinte com ficha aberta
+
+- **WHEN** a pessoa usuária aciona o item "Contribuinte" da barra lateral estando na ficha de um contribuinte
+- **THEN** os subitens do grupo alternam entre exibidos e ocultos, e a busca da barra superior permanece fechada
+
+#### Scenario: Nome de aba não é confundido com um contribuinte
+
+- **WHEN** o endereço em exibição não corresponde à ficha de um contribuinte, ainda que contenha o nome de uma aba da ficha
+- **THEN** os subitens do grupo Contribuinte permanecem inertes, sem tratar o nome da aba como `id_contribuinte`
 
 #### Scenario: Destaque do item correspondente à tela atual
 
@@ -137,6 +161,8 @@ A barra lateral SHALL oferecer um controle "Recolher menu" no seu rodapé. Quand
 
 A barra lateral SHALL oferecer, no seu rodapé, acima do controle "Recolher menu", um campo de busca de funcionalidades do sistema, rotulado "Busca funcionalidade". A busca SHALL filtrar as funcionalidades pelo texto digitado e, para cada resultado, SHALL exibir o nome da funcionalidade e seu caminho no sistema. Acionar um resultado SHALL navegar para a funcionalidade. O dropdown de resultados SHALL abrir para cima, a partir do campo de busca. Esse campo SHALL ficar oculto quando a barra lateral estiver recolhida.
 
+As abas da ficha do contribuinte NÃO SHALL constar entre as funcionalidades pesquisáveis, por dependerem de um contribuinte escolhido: não há endereço para elas sem `id_contribuinte`. A escolha de contribuinte se dá pela busca de contribuinte da barra superior.
+
 #### Scenario: Abrir a busca ao focar o campo
 
 - **WHEN** a pessoa usuária foca o campo "Busca funcionalidade"
@@ -151,6 +177,11 @@ A barra lateral SHALL oferecer, no seu rodapé, acima do controle "Recolher menu
 
 - **WHEN** o texto digitado não corresponde a nenhuma funcionalidade
 - **THEN** o dropdown informa que nenhuma funcionalidade foi encontrada
+
+#### Scenario: Abas do contribuinte fora da busca de funcionalidade
+
+- **WHEN** a pessoa usuária digita o nome de uma aba da ficha do contribuinte no campo "Busca funcionalidade"
+- **THEN** nenhuma aba da ficha do contribuinte é listada no dropdown
 
 #### Scenario: Navegar por um resultado
 
@@ -176,6 +207,8 @@ A barra superior SHALL oferecer um campo de busca de contribuintes, com texto de
 
 Cada item do dropdown SHALL exibir o nome de exibição do contribuinte como título, a linha de identificação "CNPJ · IE" como subtítulo, e um badge com a situação cadastral do contribuinte. Acionar um item SHALL navegar para a ficha do contribuinte correspondente.
 
+A busca SHALL poder ser aberta também a partir do item "Contribuinte" da barra lateral, quando nenhuma ficha estiver aberta. Aberta por essa via, ela SHALL se comportar exatamente como se a pessoa usuária tivesse focado o campo de busca: mesmo conteúdo do dropdown, mesmo foco no campo e mesmas formas de fechamento.
+
 #### Scenario: Abrir a busca sem texto
 
 - **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada e já abriu fichas de contribuinte antes
@@ -185,6 +218,11 @@ Cada item do dropdown SHALL exibir o nome de exibição do contribuinte como tí
 
 - **WHEN** a pessoa usuária foca o campo de busca de contribuinte sem ter digitado nada e ainda não abriu nenhuma ficha
 - **THEN** o dropdown orienta que se digite CNPJ, CPF, inscrição estadual, razão social ou nome fantasia
+
+#### Scenario: Abrir a busca pela barra lateral
+
+- **WHEN** a pessoa usuária aciona o item "Contribuinte" da barra lateral estando fora da ficha de um contribuinte
+- **THEN** o campo de busca da barra superior recebe o foco e o dropdown é exibido com o mesmo conteúdo que exibiria se o campo tivesse sido focado diretamente
 
 #### Scenario: Filtrar contribuintes por texto
 
